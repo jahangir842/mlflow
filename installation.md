@@ -54,7 +54,7 @@ Now that you've installed MLflow and set up your storage backend, you can start 
 ```bash
 mlflow server \
   --backend-store-uri postgresql://mlflowuser:yourpassword@localhost/mlflowdb \
-  --default-artifact-root /path/to/artifacts \
+  --default-artifact-root /home/username/mlflow/artifacts \
   --host 0.0.0.0 --port 5000
 ```
 
