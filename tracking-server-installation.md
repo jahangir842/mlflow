@@ -7,12 +7,13 @@ Make sure you have Python and pip installed, then install the necessary dependen
 1. **Install Python and pip** (if not already installed):
    ```bash
    sudo apt update
-   sudo apt install python3 python3-pip
+   sudo apt install python3 python3-pip libpq-dev
    ```
 
 2. **Install MLflow**:
    MLflow can be installed via pip:
    ```bash
+   pip install psycopg2
    pip3 install mlflow
    ```
 
@@ -54,7 +55,7 @@ Now that you've installed MLflow and set up your storage backend, you can start 
 ```bash
 mlflow server \
   --backend-store-uri postgresql://mlflowuser:yourpassword@localhost/mlflowdb \
-  --default-artifact-root /home/username/mlflow/artifacts \
+  --default-artifact-root /home/username/mlflow/artifacts
   --host 0.0.0.0 --port 5000
 ```
 
