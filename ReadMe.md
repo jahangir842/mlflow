@@ -17,16 +17,43 @@ Each team member must configure their local MLflow environment to point to your 
 
 You can set the `MLFLOW_TRACKING_URI` environment variable on their machine to point to your server’s address. They can either set it in their terminal session or in the Python script.
 
-##### Option 1: Set the Environment Variable (Temporary for the Session)
-In the terminal, set the `MLFLOW_TRACKING_URI` to the address of your server:
+##### Option 1: Set the Environment Variable 
+
+   Download this script files: `set_mlflow_tracking_uri.sh`.
+
+2. **Make the Script Executable**:
+   Make the script executable by running:
+   ```bash
+   chmod +x set_mlflow_tracking_uri.sh
+   ```
+
+3. **Run the Script**:
+   Execute the script by running:
+   ```bash
+   ./set_mlflow_tracking_uri.sh
+    ```
+
+
+##### Option 2: Add manually in Bashrc 
+
+Open the bashrc with following command:
+```bash
+nano ~/.bashrc
+```
+
+Add the follwong line in ~/.bashrc file:
 
 ```bash
 export MLFLOW_TRACKING_URI=http://192.168.1.147:5000
 ```
 
-Replace `<server-ip>` with the IP address of your server. You can also use a domain name if your server is publicly accessible.
+Update environment with:
 
-##### Option 2: Set the Tracking URI in Python Script (Permanent for the Script)
+```bash
+source ~/.bashrc
+```
+
+##### Option 3: Set the Tracking URI in Python Script (Permanent for the Script)
 In each Python script where they are logging experiments, they can set the `tracking_uri` programmatically:
 
 ```python
