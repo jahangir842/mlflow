@@ -76,7 +76,7 @@ experiment_name = "team_project_experiment"
 mlflow.set_experiment(experiment_name)
 
 # Start a new MLflow run
-with mlflow.start_run():
+with mlflow.start_run(run_name="first_run"):
     # Log a parameter (e.g., a hyperparameter)
     mlflow.log_param("learning_rate", 0.01)
     
