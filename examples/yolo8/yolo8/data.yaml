@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['apple']
+
+roboflow:
+  workspace: lakshantha-dissanayake
+  project: apple-detection-5z37o
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/lakshantha-dissanayake/apple-detection-5z37o/dataset/1
