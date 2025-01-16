@@ -94,4 +94,104 @@ To verify that the server is running, you can open a web browser and visit `http
 
 ---
 
-That's it! You now have a centralized MLflow tracking server set up on Ubuntu, where your team members can log their experiments.
+
+# Automate the MLflow Server:
+
+#### 1. Create a systemd Service File
+
+You can create a systemd service to manage the MLflow server as a service. Follow these steps:
+
+1. Open a terminal and create a new service file in the `/etc/systemd/system/` directory:
+
+   ```bash
+   sudo nano /etc/systemd/system/mlflow-server.service
+   ```
+
+2. In the `mlflow-server.service` file, add the following content:
+
+   ```ini
+   [Unit]
+   Description=MLflow Server
+   After=network.target
+
+   [Service]
+   User=jahangir
+   Group=jahangir
+   WorkingDirectory=/home/jahangir/projects/mlflow
+   ExecStart=/bin/bash -c "source /home/jahangir/projects/mlflow/.mlflow/bin/activate && /home/jahangir/projects/mlflow/.mlflow/bin/mlflow server --backend-store-uri postgresql://admin:pakistan@localhost/ml>
+   Restart=always
+   Environment=PATH=/usr/local/bin:$PATH
+
+   [Install]
+   WantedBy=multi-user.target
+
+   ```
+
+   - Replace `/usr/local/bin/mlflow` with the actual path to your MLflow binary if it's different. You can find the path by running `which mlflow` in your terminal.
+   - Replace `username` with your actual system username.
+   - The `Restart=always` ensures that the MLflow server restarts if it crashes unexpectedly.
+
+3. Save and close the file (`Ctrl + X`, then `Y`, and `Enter` to confirm).
+
+#### 2. Reload systemd and Enable the Service
+
+After creating the service file, you'll need to reload the systemd manager and enable the service to start on boot:
+
+1. Reload the systemd manager:
+
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+
+2. Enable the MLflow service to start automatically at boot:
+
+   ```bash
+   sudo systemctl enable mlflow-server
+   ```
+
+3. Start the service immediately:
+
+   ```bash
+   sudo systemctl start mlflow-server
+   ```
+
+#### 3. Check the Status of the Service
+
+To check if the MLflow server is running correctly, you can use:
+
+```bash
+sudo systemctl status mlflow-server
+```
+
+This will display the status of the MLflow service. You should see that it's running and active. If there are any issues, it will show logs for debugging.
+
+#### 4. Access the MLflow Server
+
+Now, the MLflow server should be running and accessible on `http://localhost:5000`. You can check the logs with:
+
+```bash
+sudo journalctl -u mlflow-server -f
+```
+
+This will stream the logs for the MLflow service, allowing you to see if there are any issues or errors.
+
+### Additional Notes:
+- **Stopping the Service:** You can stop the service with:
+
+  ```bash
+  sudo systemctl stop mlflow-server
+  ```
+
+- **Restarting the Service:** If you need to restart the service:
+
+  ```bash
+  sudo systemctl restart mlflow-server
+  ```
+
+- **Disabling the Service:** If you no longer want the MLflow server to start automatically on boot:
+
+  ```bash
+  sudo systemctl disable mlflow-server
+  ```
+
+This setup will ensure that the MLflow server starts automatically whenever the system boots and can be managed easily through systemd commands.
