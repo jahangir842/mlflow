@@ -55,11 +55,11 @@ Now that you've installed MLflow and set up your storage backend, you can start 
 ```bash
 mlflow server \
   --backend-store-uri postgresql://mlflowuser:yourpassword@localhost/mlflowdb \
-  --default-artifact-root /home/username/mlflow/artifacts
+  --default-artifact-root /mnt/mlflow
   --host 0.0.0.0 --port 5000
 ```
 
-- Replace `/path/to/artifacts` with the directory where you want to store your artifacts (for local file storage, you can use a directory path like `/home/username/mlflow-artifacts`).
+- Replace `/mnt/mlflow` with the directory where you want to store your artifacts. (Can be NFS Share or Blob Storage if Cloud)
 - Replace `postgresql://mlflowuser:yourpassword@localhost/mlflowdb` with your actual database connection string.
 
 This command will start the MLflow server and make it accessible on port 5000. It will also allow team members on different machines to log their experiments to the centralized server.
