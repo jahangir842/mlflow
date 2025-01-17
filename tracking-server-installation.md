@@ -1,21 +1,55 @@
-To set up an MLflow server on Ubuntu for tracking your team's machine learning experiments, you need to follow a few steps. This will allow all your team members to log their experiments to a centralized MLflow tracking server. Below is a step-by-step guide:
+### Setting Up an MLflow Server on Ubuntu
 
-### 1. Install Dependencies
+To set up an MLflow server on Ubuntu for tracking your team's machine learning experiments, follow these steps. This setup allows team members to log their experiments to a centralized MLflow tracking server.
 
-Make sure you have Python and pip installed, then install the necessary dependencies to run MLflow.
+---
 
-1. **Install Python and pip** (if not already installed):
+### Step 1: Install Dependencies
+
+Ensure you have Python, pip, and other required dependencies installed.
+
+1. **Update the package index and install Python, pip, and PostgreSQL development libraries**:
    ```bash
    sudo apt update
-   sudo apt install python3 python3-pip libpq-dev
+   sudo apt install python3 python3-pip libpq-dev -y
    ```
 
-2. **Install MLflow**:
-   MLflow can be installed via pip:
+2. **Create a Python Virtual Environment**:
+   Use `venv` to isolate the MLflow environment.
+
+   - Navigate to the desired directory:
+     ```bash
+     cd /path/to/your/project
+     ```
+
+   - Create a virtual environment named `.mlflow`:
+     ```bash
+     python3 -m venv .mlflow
+     ```
+
+   - Activate the virtual environment:
+     ```bash
+     source .mlflow/bin/activate
+     ```
+
+   - Verify the environment is active. The terminal prompt should change to include `.mlflow`:
+     ```bash
+     (.mlflow) user@machine:~/project$
+     ```
+
+   - To deactivate the environment later, use:
+     ```bash
+     deactivate
+     ```
+
+3. **Install MLflow and PostgreSQL Adapter**:
+   With the virtual environment activated, install the required packages:
    ```bash
    pip install psycopg2
-   pip3 install mlflow
+   pip install mlflow
    ```
+
+---
 
 ### 2. Set Up a Backend Storage (Optional, but recommended)
 
@@ -84,9 +118,14 @@ Team members need to configure their MLflow client to log experiments to the cen
 
 2. After setting this, your team members can use the usual MLflow tracking functions (`mlflow.start_run()`, `mlflow.log_param()`, etc.) and their experiments will be logged to the central server.
 
-### 6. (Optional) Set Up Authentication
+### 6. (Optional) Set Up Authentication (MLFLOW Builtin Authentication)
 
 If you want to restrict access to your MLflow server, you can set up authentication. One option is to use Nginx as a reverse proxy with authentication (Basic Auth, OAuth, etc.). This would require configuring an Nginx server to act as a frontend for MLflow and adding user authentication.
+
+### 6. (Optional) Set Up Authentication (With Reverse Proxy)
+
+If you want to restrict access to your MLflow server, you can set up authentication. One option is to use Nginx as a reverse proxy with authentication (Basic Auth, OAuth, etc.). This would require configuring an Nginx server to act as a frontend for MLflow and adding user authentication.
+
 
 ### 7. Verify the Setup
 
