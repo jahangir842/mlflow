@@ -103,8 +103,47 @@ Here they can:
 - Compare different runs
 - Monitor metrics, parameters, and artifacts
 - Download logged artifacts (like models or data files)
+- 
 
-### 4. **Best Practices for Logging Experiments**
+
+#####################################################
+
+
+### Step 1: Install NFS Common
+
+Install the NFS client utilities on each machine that will access the shared directory. Follow these steps:
+
+1. Update the package index to ensure the latest versions are available:
+   ```bash
+   sudo apt update
+   ```
+
+2. Install the NFS common package:
+   ```bash
+   sudo apt install nfs-common -y
+   ```
+
+---
+
+### Step 4: Create a Mount Point  
+On the client machine, set up a directory to serve as the mount point for the shared directory. Run the following command:  
+
+```bash
+sudo mkdir -p /opt/mlflow
+```
+
+### Step 3: Mount the Shared Directory  
+Mount the shared directory exported by the server to the client’s mount point using the command below:  
+
+```bash
+sudo mount 192.168.1.147:/opt/mlflow /opt/mlflow
+```  
+
+Replace `<server_IP>` with the IP address of the NFS server.
+
+####################################################
+
+### 5. **Best Practices for Logging Experiments**
 
 To ensure consistency and effective collaboration, it’s good practice for your team to follow these guidelines:
 
