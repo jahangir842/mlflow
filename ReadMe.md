@@ -62,7 +62,7 @@ Save and exit the file, then test the configuration with:
 sudo mount -a
 ```
 
-####################################################
+---
 
 #### 1. **Set the Tracking URI**
 
