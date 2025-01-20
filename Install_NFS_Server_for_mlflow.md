@@ -20,7 +20,7 @@ for Rhel based:
    ```bash
    sudo apt install nfs-kernel-server -y
    ```
-for Rhel based:
+   for Rhel based:
    ```bash
    sudo dnf install nfs-utils -y
    ```
