@@ -102,6 +102,35 @@ Then, configure PostgreSQL:
    \q
    ```
 
+---
+
+### Open Port 6000 in Firewall (RHEL Based Linux)
+
+1. **Allow Port 6000:**
+   ```bash
+   sudo firewall-cmd --permanent --add-port=6000/tcp
+   ```
+
+2. **Reload Firewall:**
+   ```bash
+   sudo firewall-cmd --reload
+   ```
+
+3. **Verify:**
+   ```bash
+   sudo firewall-cmd --list-ports
+   ```
+
+4. **(Optional) SELinux:**
+   If SELinux is enforcing:
+   ```bash
+   sudo semanage port -a -t http_port_t -p tcp 6000
+   ```
+
+Done! Port 6000 is now open.
+
+---
+
 ### 3. Start the MLflow Server
 
 Now that you've installed MLflow and set up your storage backend, you can start the server. Use the following command to start the MLflow server.
