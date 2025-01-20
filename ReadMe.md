@@ -71,33 +71,29 @@ Once the tracking URI is set to your server, they can start logging experiments 
 ```python
 import mlflow
 
-# Optionally set the experiment name (this will create a new experiment or use an existing one)
-experiment_name = "team_project_experiment"
-mlflow.set_experiment(experiment_name)
+# Set the experiment name
+mlflow.set_experiment("team_project_experiment")
 
 # Start a new MLflow run
 with mlflow.start_run(run_name="first_run"):
-    # Log a parameter (e.g., a hyperparameter)
-    log_param("learning_rate", 0.01)
-    log_param("model_name", model_name)
-    log_param("output_dir", output_dir)
-    log_param("lora_r", lora_r)
-    log_param("lora_alpha", lora_alpha)
-    log_param("lora_dropout", lora_dropout)
-    log_param("num_train_epochs", num_train_epochs)
-    log_param("batch_size", per_device_train_batch_size)
-    log_param("weight_decay", weight_decay)
-    log_param("lr_scheduler", lr_scheduler_type)
-    log_param("file_name", "allinone.py")
-    
-    # Log a metric (e.g., accuracy)
-    mlflow.log_metric("accuracy", 0.95)
-    
-    # Log an artifact (e.g., a model file)
-    mlflow.log_artifact("model.pkl")
-    
-    # Optionally log other things, like plots or data files
-    # mlflow.log_artifact("data.csv")
+    # Log parameters directly
+    mlflow.log_param("learning_rate", 0.01)
+    mlflow.log_param("model_name", "example_model")
+    mlflow.log_param("output_dir", "/path/to/output")
+    mlflow.log_param("lora_r", 16)
+    mlflow.log_param("lora_alpha", 32)
+    mlflow.log_param("lora_dropout", 0.1)
+    mlflow.log_param("num_train_epochs", 10)
+    mlflow.log_param("batch_size", 32)
+    mlflow.log_param("weight_decay", 0.01)
+    mlflow.log_param("lr_scheduler", "linear")
+    mlflow.log_param("file_name", "allinone.py")
+
+    # Example: Log a metric (optional)
+    mlflow.log_metric("accuracy", 0.85)
+
+    # Example: Log an artifact (e.g., a file)
+    # mlflow.log_artifact("path/to/local/file")
 ```
 
 ### 3. **Access the MLflow UI**
