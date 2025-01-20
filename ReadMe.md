@@ -9,7 +9,60 @@
 
 2. **Access to the Tracking Server**: Ensure that your MLflow server is running and accessible to your team members. They should be able to access the server’s URL (e.g., `http://192.168.1.147:5000`) from their machines.
 
-### Steps for Team Members to Log Experiments
+---
+
+### Step 1: Create Shared Directory (NFS)
+
+Install the NFS client utilities on each machine that will access the shared directory. Follow these steps:
+
+1. Update the package index to ensure the latest versions are available:
+   ```bash
+   sudo apt update
+   ```
+
+2. Install the NFS common package:
+   ```bash
+   sudo apt install nfs-common -y
+   ```
+
+---
+
+### Step 4: Create a Mount Point  
+On the client machine, set up a directory to serve as the mount point for the shared directory. Run the following command:  
+
+```bash
+sudo mkdir -p /opt/mlflow
+```
+
+### Step 3: Mount the Shared Directory  
+Mount the shared directory exported by the server to the client’s mount point using the command below:  
+
+```bash
+sudo mount 192.168.1.147:/opt/mlflow /opt/mlflow
+```  
+
+Replace `<server_IP>` with the IP address of the NFS server.
+
+### Step 4: Configure Persistent Mounting
+To ensure the NFS directory mounts automatically on reboot, add an entry to the `/etc/fstab` file. Open the file with a text editor:
+
+```bash
+sudo nano /etc/fstab
+```
+
+Add the following line:
+
+```plaintext
+192.168.1.147:/opt/mlflow /opt/mlflow nfs defaults 0 0
+```
+
+Save and exit the file, then test the configuration with:
+
+```bash
+sudo mount -a
+```
+
+####################################################
 
 #### 1. **Set the Tracking URI**
 
@@ -17,24 +70,7 @@ Each team member must configure their local MLflow environment to point to your 
 
 You can set the `MLFLOW_TRACKING_URI` environment variable on their machine to point to your server’s address. They can either set it in their terminal session or in the Python script.
 
-##### Option 1: Set the Environment Variable 
-
-   Download this script files: `set_mlflow_tracking_uri.sh`.
-
-2. **Make the Script Executable**:
-   Make the script executable by running:
-   ```bash
-   chmod +x set_mlflow_tracking_uri.sh
-   ```
-
-3. **Run the Script**:
-   Execute the script by running:
-   ```bash
-   ./set_mlflow_tracking_uri.sh
-    ```
-
-
-##### Option 2: Add manually in Bashrc 
+##### Option 1: Add Tracking URI in Bashrc 
 
 Open the bashrc with following command:
 ```bash
@@ -53,7 +89,7 @@ Update environment with:
 source ~/.bashrc
 ```
 
-##### Option 3: Set the Tracking URI in Python Script (Permanent for the Script)
+##### Option 2: Set the Tracking URI in Python Script (Permanent for the Script)
 In each Python script where they are logging experiments, they can set the `tracking_uri` programmatically:
 
 ```python
@@ -110,63 +146,6 @@ Here they can:
 - Monitor metrics, parameters, and artifacts
 - Download logged artifacts (like models or data files)
 - 
-
-#####################################################
-
-### Step 1: Create Shared Directory (NFS)
-
-Install the NFS client utilities on each machine that will access the shared directory. Follow these steps:
-
-1. Update the package index to ensure the latest versions are available:
-   ```bash
-   sudo apt update
-   ```
-
-2. Install the NFS common package:
-   ```bash
-   sudo apt install nfs-common -y
-   ```
-
----
-
-### Step 4: Create a Mount Point  
-On the client machine, set up a directory to serve as the mount point for the shared directory. Run the following command:  
-
-```bash
-sudo mkdir -p /opt/mlflow
-```
-
-### Step 3: Mount the Shared Directory  
-Mount the shared directory exported by the server to the client’s mount point using the command below:  
-
-```bash
-sudo mount 192.168.1.147:/opt/mlflow /opt/mlflow
-```  
-
-Replace `<server_IP>` with the IP address of the NFS server.
-
-####################################################
-
-### Step 4: Configure Persistent Mounting
-To ensure the NFS directory mounts automatically on reboot, add an entry to the `/etc/fstab` file. Open the file with a text editor:
-
-```bash
-sudo nano /etc/fstab
-```
-
-Add the following line:
-
-```plaintext
-192.168.1.147:/opt/mlflow /opt/mlflow nfs defaults 0 0
-```
-
-Save and exit the file, then test the configuration with:
-
-```bash
-sudo mount -a
-```
-
-####################################################
 
 ### 5. **Best Practices for Logging Experiments**
 
