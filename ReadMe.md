@@ -105,11 +105,9 @@ Here they can:
 - Download logged artifacts (like models or data files)
 - 
 
-
 #####################################################
 
-
-### Step 1: Install NFS Common
+### Step 1: Create Shared Directory (NFS)
 
 Install the NFS client utilities on each machine that will access the shared directory. Follow these steps:
 
@@ -140,6 +138,27 @@ sudo mount 192.168.1.147:/opt/mlflow /opt/mlflow
 ```  
 
 Replace `<server_IP>` with the IP address of the NFS server.
+
+####################################################
+
+### Step 4: Configure Persistent Mounting
+To ensure the NFS directory mounts automatically on reboot, add an entry to the `/etc/fstab` file. Open the file with a text editor:
+
+```bash
+sudo nano /etc/fstab
+```
+
+Add the following line:
+
+```plaintext
+192.168.1.147:/opt/mlflow /opt/mlflow nfs defaults 0 0
+```
+
+Save and exit the file, then test the configuration with:
+
+```bash
+sudo mount -a
+```
 
 ####################################################
 
