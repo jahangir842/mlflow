@@ -1,6 +1,6 @@
-### Guide to Log Experiments to MLflow Tracking Server
+# Guide to Log Experiments to MLflow Tracking Server
 
-#### Prerequisites:
+### Prerequisites:
 
 1. **MLflow Installed**: Ensure that each team member has MLflow installed on their machine. They can install it using `pip`:
    ```bash
@@ -64,13 +64,13 @@ sudo mount -a
 
 ---
 
-#### 1. **Set the Tracking URI**
+## **Set the Tracking URI**
 
 Each team member must configure their local MLflow environment to point to your centralized MLflow tracking server.
 
 You can set the `MLFLOW_TRACKING_URI` environment variable on their machine to point to your server’s address. They can either set it in their terminal session or in the Python script.
 
-##### Option 1: Add Tracking URI in Bashrc 
+#### Option 1: Add Tracking URI in Bashrc 
 
 Open the bashrc with following command:
 ```bash
@@ -89,7 +89,7 @@ Update environment with:
 source ~/.bashrc
 ```
 
-##### Option 2: Set the Tracking URI in Python Script (Permanent for the Script)
+#### Option 2: Set the Tracking URI in Python Script (Permanent for the Script)
 In each Python script where they are logging experiments, they can set the `tracking_uri` programmatically:
 
 ```python
@@ -132,7 +132,9 @@ with mlflow.start_run(run_name="first_run"):
     # mlflow.log_artifact("path/to/local/file")
 ```
 
-### 3. **Access the MLflow UI**
+---
+
+#### 3. **Access the MLflow UI**
 
 After running the script, the experiment and run will be logged to the centralized server. Team members can access the MLflow UI on the server by visiting:
 
