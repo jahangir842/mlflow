@@ -12,7 +12,7 @@ To begin, install the NFS kernel server on the host machine:
    ```bash
    sudo apt update
    ```
-for Rhel based:
+   for Rhel based:
    ```bash
    sudo dnf update -y
    ```
