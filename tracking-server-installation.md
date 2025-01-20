@@ -49,6 +49,12 @@ Ensure you have Python, pip, and other required dependencies installed.
    pip install mlflow
    ```
 
+   For Rhel based linux: (is it same for ubuntu based? Verify?)
+   ```bash
+   pip install psycopg2-binary
+   pip install mlflow
+   ```
+
 ---
 
 ### 2. Set Up a Backend Storage (Optional, but recommended) https://github.com/jahangir842/mlflow/blob/main/authentication_for_mlflow.md
