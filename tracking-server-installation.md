@@ -61,15 +61,23 @@ MLflow can store experiment data in a local directory. For this, you need to spe
 #### Option 2: Using PostgreSQL (Recommended for production) https://github.com/jahangir842/mlflow/blob/main/authentication_for_mlflow.md
 To use PostgreSQL, you'll first need to install it:
 
-```bash
-sudo apt install postgresql postgresql-contrib
-```
+   ```bash
+   sudo apt install postgresql postgresql-contrib
+   ```
+   
+   For Rhel based linux:
+   
+   ```bash
+   sudo dnf install postgresql-server postgresql-contrib -y
+   ```
+   **Initialize the PostgreSQL database**:
 
-For Rhel based linux:
+   ```bash
+   sudo postgresql-setup --initdb
+   sudo systemctl enable postgresql
+   sudo systemctl start postgresql
+   ```
 
-```bash
-sudo dnf install postgresql-server postgresql-contrib -y
-```
 
 Then, configure PostgreSQL:
 1. Log into PostgreSQL:
