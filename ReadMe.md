@@ -128,7 +128,9 @@ with mlflow.start_run(run_name="first_run"):
     # Example: Log a metric (optional)
     mlflow.log_metric("accuracy", 0.85)
 
-    # Example: Log an artifact (e.g., a file) mlflow.log_artifact("path/to/local/file")
+    # Example: Log an artifact (e.g., a file), By detault it save the artifacts on `./mlruns`
+    # e.g:
+    # mlflow.log_artifact("path/to/local/file")
     mlflow.log_artifact("model.pkl")
 ```
 
