@@ -12,14 +12,27 @@ To begin, install the NFS kernel server on the host machine:
    ```bash
    sudo apt update
    ```
-
+for Rhel based:
+   ```bash
+   sudo dnf update -y
+   ```
 2. Install the NFS kernel server:
    ```bash
    sudo apt install nfs-kernel-server -y
    ```
+for Rhel based:
+   ```bash
+   sudo dnf install nfs-utils -y
+   ```
 
    Wait for the installation to complete.
 
+2. Enable the NFS service:
+   ```bash
+   sudo systemctl enable --now nfs-server
+   sudo systemctl start nfs-server
+   ```
+   
 ---
 
 ### Step 2: Configure the Shared Directory
