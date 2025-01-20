@@ -1,4 +1,4 @@
-### Guide for Team Members to Log Experiments to MLflow Tracking Server
+### Guide to Log Experiments to MLflow Tracking Server
 
 #### Prerequisites:
 
