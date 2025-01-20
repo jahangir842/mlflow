@@ -13,16 +13,11 @@ To begin, install the NFS kernel server on the host machine:
    sudo apt update
    ```
    for Rhel based:
-   ```bash
-   sudo dnf update -y
-   ```
-2. Install the NFS kernel server:
+   https://medium.com/@jackkimusa/linux-how-to-setup-nfs-server-on-rhel-8-1c0ba5783caf
+   
+3. Install the NFS kernel server:
    ```bash
    sudo apt install nfs-kernel-server -y
-   ```
-   for Rhel based:
-   ```bash
-   sudo dnf install nfs-utils -y
    ```
 
    Wait for the installation to complete.
