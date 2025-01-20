@@ -65,6 +65,12 @@ To use PostgreSQL, you'll first need to install it:
 sudo apt install postgresql postgresql-contrib
 ```
 
+For Rhel based linux:
+
+```bash
+sudo dnf install postgresql-server postgresql-contrib -y
+```
+
 Then, configure PostgreSQL:
 1. Log into PostgreSQL:
    ```bash
