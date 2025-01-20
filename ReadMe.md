@@ -78,7 +78,7 @@ mlflow.set_experiment(experiment_name)
 # Start a new MLflow run
 with mlflow.start_run(run_name="first_run"):
     # Log a parameter (e.g., a hyperparameter)
-    mlflow.log_param("learning_rate", 0.01)
+    log_param("learning_rate", 0.01)
     log_param("model_name", model_name)
     log_param("output_dir", output_dir)
     log_param("lora_r", lora_r)
@@ -86,7 +86,6 @@ with mlflow.start_run(run_name="first_run"):
     log_param("lora_dropout", lora_dropout)
     log_param("num_train_epochs", num_train_epochs)
     log_param("batch_size", per_device_train_batch_size)
-    log_param("learning_rate", learning_rate)
     log_param("weight_decay", weight_decay)
     log_param("lr_scheduler", lr_scheduler_type)
     log_param("file_name", "allinone.py")
