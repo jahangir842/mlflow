@@ -72,7 +72,7 @@ Once the tracking URI is set to your server, they can start logging experiments 
 import mlflow
 
 # Set the experiment name
-mlflow.set_experiment("team_project_experiment")
+mlflow.set_experiment("LLM Fine Tuning with llama4.o")
 
 # Start a new MLflow run
 with mlflow.start_run(run_name="first_run"):
