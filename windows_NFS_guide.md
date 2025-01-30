@@ -29,7 +29,7 @@ mount -o anon \\<NFS-SERVER-IP>\<NFS-SHARE> Z:
 If your NFS server is `192.168.1.100` and the shared directory is `/nfs/mlflow_artifacts`, run:
 
 ```cmd
-mount -o anon \\192.168.1.100\nfs\mlflow_artifacts Z:
+mount -o anon \\192.168.1.147\nfs\mlflow_artifacts Z:
 ```
 
 Now, you can access the share via `Z:\` in **File Explorer**.
