@@ -26,10 +26,10 @@ mount -o anon \\<NFS-SERVER-IP>\<NFS-SHARE> Z:
 ```
 
 🔹 **Example:**  
-If your NFS server is `192.168.1.100` and the shared directory is `/nfs/mlflow_artifacts`, run:
+If your NFS server is `192.168.1.147` and the shared directory is `/nfs/mlflow_artifacts`, run:
 
 ```cmd
-mount -o anon \\192.168.1.147\nfs\mlflow_artifacts Z:
+mount -o anon \\192.168.1.147\opt\mlflow Z:
 ```
 
 Now, you can access the share via `Z:\` in **File Explorer**.
@@ -40,7 +40,7 @@ Now, you can access the share via `Z:\` in **File Explorer**.
 To automatically mount the NFS share **after reboot**, use:
 
 ```cmd
-net use Z: \\192.168.1.100\nfs\mlflow_artifacts /persistent:yes
+net use Z: \\192.168.1.147\opt\mlflow /persistent:yes
 ```
 
 ---
@@ -55,7 +55,7 @@ net use
 You should see something like:
 
 ```
-Z:  \\192.168.1.100\nfs\mlflow_artifacts
+Z:  \\192.168.1.147\opt\mlflow
 ```
 
 ---
