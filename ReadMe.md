@@ -142,7 +142,6 @@ Here they can:
 - Compare different runs
 - Monitor metrics, parameters, and artifacts
 - Download logged artifacts (like models or data files)
-- 
 
 ### 5. **Best Practices for Logging Experiments**
 
