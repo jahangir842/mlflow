@@ -1,6 +1,6 @@
 # Guide to Log Experiments to MLflow Tracking Server
 
-### Prerequisites:
+### Step 1: Install MLflow:
 
 1. **MLflow Installed**: Ensure that each team member has MLflow installed on their machine. They can install it using `pip`:
    ```bash
@@ -11,7 +11,7 @@
 
 ---
 
-### Step 1: Create Shared Directory (NFS) For Linux:
+### Step 2: Create Shared Directory (NFS) For Linux:
 
 Install the NFS client utilities on each machine that will access the shared directory. Follow these steps:
 
@@ -63,50 +63,27 @@ sudo mount -a
 
 ---
 
-### Step 2: Create Shared Directory (NFS) For Windows:
+### Step 3: Create Shared Directory (NFS) For Windows:
 
-If the Windows user needs direct access to artifacts stored on NFS, **mount the NFS share**:
+#### **Step 1: Enable NFS Client on Windows 10**
+1. **Open Control Panel**: Press `Windows + R`, type `control`, and hit Enter.
+2. **Go to "Programs"**: Click "Programs" and then "Turn Windows features on or off".
+3. **Enable NFS Client**: 
+   - Find "Services for NFS", expand it, and check "Client for NFS".
+   - Click OK and restart if prompted.
 
-1. Open **PowerShell as Administrator**.
-2. Run:
-
-   ```powershell
-   net use Z: \\<NFS-Server-IP>\mlflow_artifacts
-   ```
-
-Replace `<NFS-Server-IP>` with your **NFS server address**.
-
-Now, the Windows user can directly access MLflow artifacts stored on the NFS share.
-
+#### **Step 2: Map the NFS Share in File Explorer**
+1. **Open File Explorer**: Press `Windows + E`.
+2. **Go to "This PC"**: In the left sidebar, click "This PC".
+3. **Map Network Drive**: 
+   - Right-click "This PC" and select "Map Network Drive".
+   - Choose a Drive letter and enter the NFS server path: `\\<MLFLOW_SERVER_IP>\<NFS_SHARE_PATH>`. For example: `\\192.168.1.147\opt\mlflow`.
+4. **Reconnect at Sign-in**: Check "Reconnect at sign-in" if you want it to reconnect automatically.
+5. **Finish**: Click **Finish**. The share will be mounted and accessible from "This PC".
 
 ---
 
-## **Set the Tracking URI**
-
-Each team member must configure their local MLflow environment to point to your centralized MLflow tracking server.
-
-You can set the `MLFLOW_TRACKING_URI` environment variable on their machine to point to your server’s address. They can either set it in their terminal session or in the Python script.
-
-#### Option 1: Add Tracking URI in Bashrc 
-
-Open the bashrc with following command:
-```bash
-nano ~/.bashrc
-```
-
-Add the follwong line in ~/.bashrc file:
-
-```bash
-export MLFLOW_TRACKING_URI=http://192.168.1.147:5000
-```
-
-Update environment with:
-
-```bash
-source ~/.bashrc
-```
-
-#### Option 2: Set the Tracking URI in Python Script (Permanent for the Script)
+### Step 5: Set the Tracking URI in Python Script (Permanent for the Script)
 In each Python script where they are logging experiments, they can set the `tracking_uri` programmatically:
 
 ```python
@@ -147,8 +124,8 @@ with mlflow.start_run(run_name="first_run"):
 
     # Example: Log an artifact (e.g., a file), By detault it save the artifacts on `./mlruns`
     # e.g:
-    # mlflow.log_artifact("path/to/local/file")
-    mlflow.log_artifact("model.pkl")
+    mlflow.log_artifact("path/to/output/file")
+    # mlflow.log_artifact("model.pkl")
 ```
 
 ---
