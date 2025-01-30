@@ -64,6 +64,23 @@ sudo mount -a
 
 ---
 
+## Mount NFS on Windows**
+If the Windows user needs direct access to artifacts stored on NFS, **mount the NFS share**:
+
+1. Open **PowerShell as Administrator**.
+2. Run:
+
+   ```powershell
+   net use Z: \\<NFS-Server-IP>\mlflow_artifacts
+   ```
+
+Replace `<NFS-Server-IP>` with your **NFS server address**.
+
+Now, the Windows user can directly access MLflow artifacts stored on the NFS share.
+
+
+---
+
 ## **Set the Tracking URI**
 
 Each team member must configure their local MLflow environment to point to your centralized MLflow tracking server.
