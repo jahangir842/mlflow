@@ -83,94 +83,64 @@ sudo mount -a
 
 ---
 
-### Step 5: Set the Tracking URI in Python Script (Permanent for the Script)
-In each Python script where they are logging experiments, they can set the `tracking_uri` programmatically:
+Your guide looks good overall, but there are a few improvements that could make it more comprehensive and clear. Here's a refined version:
+
+### Step 5: Set the Tracking URI in the Python Script (Permanent for the Script)
+
+To ensure that all experiment logs are directed to your centralized MLflow server, set the tracking URI programmatically in each Python script:
 
 ```python
 import mlflow
 
+# Set the tracking URI to the centralized MLflow server
 mlflow.set_tracking_uri("http://192.168.1.147:5000")
 ```
+This step will configure MLflow to log experiments to the specified server every time the script is run.
 
-This will direct MLflow to log all experiments to the centralized server.
+### 6. Log an Experiment
 
-#### 2. **Log an Experiment**
-
-Once the tracking URI is set to your server, they can start logging experiments as usual. Here’s an example Python script for logging an experiment:
+Once the tracking URI is set, you can start logging experiments. Below is an example Python script for logging an experiment:
 
 ```python
+import mlflow
 
-# Set the experiment name
-mlflow.set_experiment("LLM Fine Tuning with llama4.o")
+# Set the experiment name (Change the experiment name and also add developer name)
+mlflow.set_experiment("LLM Experiment by Daniel")
 
 # Start a new MLflow run
-with mlflow.start_run(run_name="first_run"):
-    # Log parameters directly
-    mlflow.log_param("learning_rate", 0.01)
-    mlflow.log_param("model_name", "example_model")
-    mlflow.log_param("output_dir", "/path/to/output")
-    mlflow.log_param("lora_r", 16)
-    mlflow.log_param("lora_alpha", 32)
-    mlflow.log_param("lora_dropout", 0.1)
-    mlflow.log_param("num_train_epochs", 10)
+with mlflow.start_run(run_name="Run Name"):
+    # Log general hyperparameters
+    mlflow.log_param("learning_rate", 0.001)
+    mlflow.log_param("epochs", 10)
     mlflow.log_param("batch_size", 32)
+    mlflow.log_param("optimizer", "Adam")
+    mlflow.log_param("model_architecture", "CNN")
+    mlflow.log_param("dropout_rate", 0.3)
     mlflow.log_param("weight_decay", 0.01)
-    mlflow.log_param("lr_scheduler", "linear")
-    mlflow.log_param("file_name", "allinone.py")
+    mlflow.log_param("activation_function", "ReLU")
+    mlflow.log_param("data_augmentation", "True")
+    mlflow.log_param("pretrained_model", "True")
+    mlflow.log_param("training_time", "2 hours")
+    mlflow.log_param("model_version", "v1.0")
 
-    # Example: Log a metric (optional)
+    # Example: Log a metric
     mlflow.log_metric("accuracy", 0.85)
 
-    # Example: Log an artifact (e.g., a file), By detault it save the artifacts on `./mlruns`
-    # e.g:
+    # Log an artifact (e.g., a file)
     mlflow.log_artifact("path/to/output/file")
-    # mlflow.log_artifact("model.pkl")
+    # e.g mlflow.log_artifact("C:/windows/users/daniel/project/llm")
+    # e.g mlflow.log_artifact("/home/daniel/project")
+
 ```
 
----
+### Key Notes:
+1. **Experiment Setup**: The `mlflow.set_experiment()` method ensures that the logs are grouped under the specified experiment name. It creates a new experiment if one does not exist.
+2. **Logging Parameters**: Use `mlflow.log_param()` to log parameters, which can include hyperparameters, configuration details, or any other relevant settings.
+3. **Metrics and Artifacts**: `mlflow.log_metric()` logs numerical values like accuracy, loss, etc. `mlflow.log_artifact()` is used to save files or models that are generated during the experiment.
+4. **Server Interaction**: Once set, all the experiments will automatically be logged to the centralized MLflow server, making it easy to track and manage them.
 
-#### 3. **Access the MLflow UI**
+### Additional Tips:
+- You can also log additional data such as plots, models, or source code as artifacts.
+- Ensure that the MLflow server is running and accessible at the specified URI.
 
-After running the script, the experiment and run will be logged to the centralized server. Team members can access the MLflow UI on the server by visiting:
-
-```bash
-http://192.168.1.147:5000
-```
-
-Here they can:
-- View the experiments
-- Compare different runs
-- Monitor metrics, parameters, and artifacts
-- Download logged artifacts (like models or data files)
-
-### 5. **Best Practices for Logging Experiments**
-
-To ensure consistency and effective collaboration, it’s good practice for your team to follow these guidelines:
-
-- **Use Meaningful Experiment Names**: Set clear and descriptive names for each experiment using `mlflow.set_experiment("experiment_name")`.
-- **Log Key Metrics and Parameters**: Always log important hyperparameters, metrics, and other relevant data so that the experiments can be compared easily.
-- **Log Artifacts**: Save models, training data, or other valuable files using `mlflow.log_artifact()`. This makes it easy to retrieve files later and use them in future runs.
-- **Use Version Control**: Keep track of versions of your code, models, and data. You can use versioning systems like Git to ensure everyone is on the same page with code and experiment management.
-
-### 5. **Review and Compare Experiments in the UI**
-
-Once your team members have logged multiple runs, they can visit the MLflow UI to:
-- **View experiments and runs**: The experiment list shows all the logged runs.
-- **Compare different runs**: Compare different runs based on metrics, parameters, or tags to find the best-performing models.
-- **Access artifacts**: Download the models or data files that were logged as artifacts during a run.
-
-### 6. **Access Permissions (Optional)**
-
-If your MLflow server is running in a production environment or with multiple users, it may be important to restrict access to the MLflow UI or certain experiments. You can secure access by:
-- **Setting up authentication**: Use HTTP Basic Authentication or integrate with an authentication system (e.g., OAuth, SSO) via a reverse proxy like Nginx or Apache.
-- **Creating separate experiments for teams**: Organize experiments based on different tasks or teams (e.g., `team_A_experiment`, `team_B_experiment`).
-
----
-
-### Recap of the Key Steps:
-
-1. **Set the Tracking URI**: Point to the MLflow tracking server (`http://192.168.1.147:5000`).
-2. **Log an Experiment**: Use `mlflow.start_run()` to log parameters, metrics, and artifacts.
-3. **Access the UI**: Visit the MLflow UI on `http://192.168.1.147:5000` to view and compare experiments.
-
-By following these steps, all team members will be able to log their machine learning experiments to the centralized MLflow tracking server, enabling easier collaboration and experiment management.
+This version is a bit more concise while still being thorough and includes some extra clarification for users who might be less familiar with the MLflow setup.
