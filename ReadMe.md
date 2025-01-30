@@ -11,7 +11,7 @@
 
 ---
 
-### Step 1: Create Shared Directory (NFS)
+### Step 1: Create Shared Directory (NFS) For Linux:
 
 Install the NFS client utilities on each machine that will access the shared directory. Follow these steps:
 
@@ -25,16 +25,15 @@ Install the NFS client utilities on each machine that will access the shared dir
    sudo apt install nfs-common -y
    ```
 
----
+**Create a Mount Point**
 
-### Step 4: Create a Mount Point  
 On the client machine, set up a directory to serve as the mount point for the shared directory. Run the following command:  
 
 ```bash
 sudo mkdir -p /opt/mlflow
 ```
 
-### Step 3: Mount the Shared Directory  
+**Mount the Shared Directory**  
 Mount the shared directory exported by the server to the client’s mount point using the command below:  
 
 ```bash
@@ -43,7 +42,7 @@ sudo mount 192.168.1.147:/opt/mlflow /opt/mlflow
 
 Replace `<server_IP>` with the IP address of the NFS server.
 
-### Step 4: Configure Persistent Mounting
+**Configure Persistent Mounting**
 To ensure the NFS directory mounts automatically on reboot, add an entry to the `/etc/fstab` file. Open the file with a text editor:
 
 ```bash
@@ -64,7 +63,8 @@ sudo mount -a
 
 ---
 
-## Mount NFS on Windows**
+### Step 2: Create Shared Directory (NFS) For Windows:
+
 If the Windows user needs direct access to artifacts stored on NFS, **mount the NFS share**:
 
 1. Open **PowerShell as Administrator**.
