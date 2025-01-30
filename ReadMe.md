@@ -99,7 +99,6 @@ This will direct MLflow to log all experiments to the centralized server.
 Once the tracking URI is set to your server, they can start logging experiments as usual. Here’s an example Python script for logging an experiment:
 
 ```python
-import mlflow
 
 # Set the experiment name
 mlflow.set_experiment("LLM Fine Tuning with llama4.o")
