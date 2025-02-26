@@ -1,5 +1,10 @@
 # Guide to Log Experiments to MLflow Tracking Server
 
+---
+**MLflow with Docker**: https://github.com/mlflow/mlflow/pkgs/container/mlflow
+
+---
+
 ### Step 1: Install MLflow:
 
 1. **MLflow Installed**: Ensure that each team member has MLflow installed on their machine. They can install it using `pip`:
