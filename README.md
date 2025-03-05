@@ -1,4 +1,4 @@
-# Guide to Log Experiments to MLflow Tracking Server
+# How to Log Machine Learning Experiments to MLflow Tracking Server
 
 ---
 **Official MLflow with Docker**: https://github.com/mlflow/mlflow/pkgs/container/mlflow
