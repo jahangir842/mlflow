@@ -7,6 +7,7 @@ spec:
   selector:
     matchLabels:
       app: mlflow
+  replicas: 1
   template:
     metadata:
       labels:
@@ -17,10 +18,10 @@ spec:
         image: jahangir842/mlflow-with-psycopg2:v2.20.3
         resources:
           limits:
-            memory: "512Mi"
+            memory: "1Gi"  # Increased from 512Mi
             cpu: "500m"
           requests:
-            memory: "256Mi"
+            memory: "512Mi"  # Increased from 256Mi
             cpu: "250m"
         ports:
         - containerPort: 5000
@@ -35,6 +36,13 @@ spec:
         - postgresql://admin:pakistan@postgres:5432/mlflowdb
         - --default-artifact-root
         - file:///mlflow/artifacts
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
         volumeMounts:
         - name: mlflow-artifacts
           mountPath: /mlflow/artifacts

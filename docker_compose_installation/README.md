@@ -1,36 +1,64 @@
-# MLflow Docker Compose Setup
+# MLflow with PostgreSQL Installation Guide
 
-Quick setup for MLflow using Docker Compose.
+This guide helps you set up MLflow with PostgreSQL backend using Docker Compose.
 
 ## Prerequisites
-- Docker
-- Docker Compose
 
-## Quick Start
+- Docker installed ([Docker Installation Guide](https://docs.docker.com/get-docker/))
+- Docker Compose installed ([Docker Compose Installation Guide](https://docs.docker.com/compose/install/))
 
-1. Build the custom image:
+## Installation Steps
+
+### 1. Build the Custom MLflow Image
+
 ```bash
-docker build -t mlflow-with-psycopg2:v2.20.3 .
+# Clone this repository (if you haven't already)
+git clone <your-repository-url>
+cd docker_compose_installation
+
+# Build the custom MLflow image
+docker build -t mlflow-with-psycopg2:v2.20.3 -f ../Dockerfile ..
 ```
 
-2. Start services:
+### 2. Start the Services
+
 ```bash
+# Start PostgreSQL and MLflow
 docker-compose up -d
+
+# Check if containers are running
+docker-compose ps
 ```
 
-3. Access MLflow UI:
-- URL: http://localhost:5000
+### 3. Verify Installation
+
+1. Access MLflow UI:
+   - Open your browser and go to: http://localhost:5000
+   - You should see the MLflow interface
+
+2. Test with Python:
+```python
+import mlflow
+
+# Set the tracking URI
+mlflow.set_tracking_uri("http://localhost:5000")
+
+# Start a new run
+with mlflow.start_run():
+    # Log a parameter
+    mlflow.log_param("test_param", 1)
+    # Log a metric
+    mlflow.log_metric("test_metric", 100)
+```
 
 ## Configuration
-- PostgreSQL:
-  - User: admin
-  - Password: pakistan
-  - Database: mlflowdb
-  - Port: 5432
 
-- MLflow:
-  - Port: 5000
-  - Artifacts: stored in Docker volume
+Default credentials (can be changed in docker-compose.yml):
+- PostgreSQL User: admin
+- PostgreSQL Password: pakistan
+- Database Name: mlflowdb
+- MLflow URL: http://localhost:5000
+- PostgreSQL Port: 5432
 
 ## Common Commands
 
