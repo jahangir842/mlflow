@@ -44,6 +44,8 @@ Install the NFS server package on the host machine.
    ```bash
    sudo systemctl enable --now nfs-server
    sudo systemctl start nfs-server
+   sudo systemctl status nfs-server
+
    ```
 
 ---
