@@ -1,6 +1,4 @@
-### NFS Server Installation
-
-Follow these steps to set up an NFS server on either an Ubuntu/Debian or RHEL-based system.
+## NFS Server Installation
 
 ---
 
