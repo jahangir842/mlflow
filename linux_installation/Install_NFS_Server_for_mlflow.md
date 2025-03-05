@@ -57,26 +57,26 @@ Set up a directory to share with client machines.
 #### For Both Ubuntu/Debian and RHEL:
 1. **Create the Directory**:
    ```bash
-   sudo mkdir -p /mnt/mlflow
+   sudo mkdir -p /mnt/data/mlflow
    ```
-   - Note: Your original guide had `/mnt/` and later `/mnt/nfsdir`. I’ve standardized it to `/mnt/mlflow` for consistency with your MLflow context. Adjust as needed.
+   - Note: Your original guide had `/mnt/` and later `/mnt/nfsdir`. I’ve standardized it to `/mnt/data/mlflow` for consistency with your MLflow context. Adjust as needed.
 
 2. **Change Ownership**:
    Set the directory’s ownership to `nobody:nogroup` (Ubuntu/Debian) or `nobody:nobody` (RHEL) for public access:
    - **Ubuntu/Debian**:
      ```bash
-     sudo chown nobody:nogroup /mnt/mlflow
+     sudo chown nobody:nogroup /mnt/data/mlflow
      ```
    - **RHEL**:
      ```bash
-     sudo chown nobody:nobody /mnt/mlflow
+     sudo chown nobody:nobody /mnt/data/mlflow
      ```
      - RHEL typically uses `nobody:nobody` as the default unprivileged user/group.
 
 3. **Set Permissions**:
    Allow read, write, and execute access for everyone:
    ```bash
-   sudo chmod 777 /mnt/mlflow
+   sudo chmod 777 /mnt/data/mlflow
    ```
 
 ---
@@ -94,14 +94,14 @@ Grant client access by editing the `/etc/exports` file. This step is identical f
 2. **Add Client Access**:
    Specify the directory and permissions for a single client:
    ```bash
-   /mnt/mlflow clientIP(rw,sync,no_subtree_check)
+   /mnt/data/mlflow clientIP(rw,sync,no_subtree_check)
    ```
    - Replace `clientIP` with the client’s IP address (e.g., `192.168.1.100`).
 
 3. **Add Subnet Access** (Optional):
    To allow an entire subnet (e.g., `192.168.1.0-192.168.1.255`):
    ```bash
-   /mnt/mlflow 192.168.1.0/24(rw,sync,no_subtree_check)
+   /mnt/data/mlflow 192.168.1.0/24(rw,sync,no_subtree_check)
    ```
    - **rw**: Read and write access.
    - **sync**: Ensures data is written to disk before responding.
@@ -134,7 +134,7 @@ Apply the changes to make the directory available.
      sudo systemctl restart nfs-server
      ```
 
-Your NFS server is now configured and ready to share `/mnt/mlflow` with clients.
+Your NFS server is now configured and ready to share `/mnt/data/mlflow` with clients.
 
 ---
 
@@ -181,7 +181,7 @@ Create a directory on the client to mount the NFS share.
 
 #### For Both Ubuntu/Debian and RHEL:
 ```bash
-sudo mkdir -p /mnt/mlflow
+sudo mkdir -p /mnt/data/mlflow
 ```
 
 ---
@@ -193,12 +193,12 @@ Mount the NFS server’s shared directory to the client’s mount point.
 #### For Both Ubuntu/Debian and RHEL:
 1. **Mount the Directory**:
    ```bash
-   sudo mount host_IP:/mnt/mlflow /mnt/mlflow
+   sudo mount host_IP:/mnt/data/mlflow /mnt/data/mlflow
    ```
    - Replace `host_IP` with the NFS server’s IP (e.g., `192.168.1.147`).
    - Example:
      ```bash
-     sudo mount 192.168.1.147:/mnt/mlflow /mnt/mlflow
+     sudo mount 192.168.1.147:/mnt/data/mlflow /mnt/data/mlflow
      ```
 
 2. **Verify the Mount**:
@@ -206,9 +206,9 @@ Mount the NFS server’s shared directory to the client’s mount point.
    ```bash
    df -h
    ```
-   - Look for an entry like `192.168.1.147:/mnt/mlflow` under the `Filesystem` column.
+   - Look for an entry like `192.168.1.147:/mnt/data/mlflow` under the `Filesystem` column.
 
-Once mounted, the client can access the shared files at `/mnt/mlflow`.
+Once mounted, the client can access the shared files at `/mnt/data/mlflow`.
 
 ---
 
@@ -229,7 +229,7 @@ Once mounted, the client can access the shared files at `/mnt/mlflow`.
   ```
   Add:
   ```
-  192.168.1.147:/mnt/mlflow /mnt/mlflow nfs defaults 0 0
+  192.168.1.147:/mnt/data/mlflow /mnt/data/mlflow nfs defaults 0 0
   ```
   Save and exit, then test with:
   ```bash
@@ -239,11 +239,11 @@ Once mounted, the client can access the shared files at `/mnt/mlflow`.
 - **Testing the Setup**:
   On the server, create a test file:
   ```bash
-  sudo touch /mnt/mlflow/testfile.txt
+  sudo touch /mnt/data/mlflow/testfile.txt
   ```
   On the client, check if it’s visible:
   ```bash
-  ls /mnt/mlflow
+  ls /mnt/data/mlflow
   ```
 
 ---
