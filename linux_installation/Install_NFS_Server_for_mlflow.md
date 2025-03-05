@@ -1,7 +1,3 @@
-Below is a rewritten guide for setting up an NFS server and client, including commands for both Ubuntu/Debian (using `apt`) and RHEL-based systems (using `dnf` or `yum`). The guide follows the same structure as your original, with added RHEL-specific instructions based on standard practices and references like the one you linked (Medium article on RHEL 8 NFS setup).
-
----
-
 ### NFS Server Installation
 
 Follow these steps to set up an NFS server on either an Ubuntu/Debian or RHEL-based system.
