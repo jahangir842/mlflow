@@ -88,9 +88,8 @@ sudo mount -a
 
 ---
 
-Your guide looks good overall, but there are a few improvements that could make it more comprehensive and clear. Here's a refined version:
 
-### Step 5: Set the Tracking URI in the Python Script (Permanent for the Script)
+### Step 4: Set the Tracking URI in the Python Script (Permanent for the Script)
 
 To ensure that all experiment logs are directed to your centralized MLflow server, set the tracking URI programmatically in each Python script:
 
@@ -102,7 +101,7 @@ mlflow.set_tracking_uri("http://192.168.1.185:30500")
 ```
 This step will configure MLflow to log experiments to the specified server every time the script is run.
 
-### 6. Log an Experiment
+### Step 5. Log an Experiment
 
 Once the tracking URI is set, you can start logging experiments. Below is an example Python script for logging an experiment:
 
