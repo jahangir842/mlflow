@@ -95,7 +95,7 @@ To ensure that all experiment logs are directed to your centralized MLflow serve
 import mlflow
 
 # Set the tracking URI to the centralized MLflow server
-mlflow.set_tracking_uri("http://192.168.1.185:30500")
+mlflow.set_tracking_uri("http://192.168.1.183:30500")
 ```
 This step will configure MLflow to log experiments to the specified server every time the script is run.
 
