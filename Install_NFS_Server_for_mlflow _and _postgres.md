@@ -102,7 +102,8 @@ Grant client access by editing the `/etc/exports` file. This step is the same fo
 2. **Add Client Access**:
    Specify directories and permissions:
    ```
-   /mnt/mlflow 192.168.1.0/24(rw,sync,no_subtree_check)
+   # /mnt/mlflow 192.168.1.0/24(rw,sync,no_subtree_check)
+   /mnt/mlflow 192.168.1.0/24(rw,sync,all_squash,anonuid=65534,anongid=65534)
    /mnt/postgres 192.168.1.0/24(rw,sync,no_subtree_check,no_root_squash)
    ```
    - Replace `192.168.1.0/24` with your subnet or specific client IP (e.g., `192.168.1.182`).
