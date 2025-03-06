@@ -1,31 +1,39 @@
-# MLflow on Kubernetes
+# MLflow on Kubernetes with NFS Persistence
 
-This setup provides an MLflow tracking server with PostgreSQL backend running on Kubernetes.
-
-## Prerequisites
-
-- Kubernetes cluster
-- kubectl configured
-- MLflow image (mlflow-with-psycopg2:v2.20.3) available in your registry
-
-### Step 1: Create namespace
-
-1. Create and activate namespace:
-```bash
-kubectl create namespace mlflow
-kubectl config set-context --current --namespace=mlflow
-
-# Verify active namespace
-kubectl config get-contexts
-# The active context should show mlflow as the namespace
-```
+This guide deploys an MLflow tracking server with a PostgreSQL backend on Kubernetes, leveraging an NFS server at `192.168.1.185` for persistent storage of PostgreSQL data and MLflow artifacts. It ensures data persists across pod restarts and node failures without requiring a StatefulSet.
 
 ---
 
-### Step 2: Create New YAML Files
+## Prerequisites
+- **Kubernetes Cluster**: A running cluster with at least one node.
+- **kubectl**: Configured to manage your cluster.
+- **MLflow Image**: `jahangir842/mlflow-with-psycopg2:v2.20.3` available in your container registry.
+- **NFS Server**: Running at `192.168.1.185` with shared directories `/mnt/postgres` (for PostgreSQL) and `/mnt/mlflow` (for MLflow artifacts). See the NFS setup section if not configured.
 
-#### 1. **Postgres PersistentVolume and PersistentVolumeClaim**
+---
+
+## Step 1: Create Namespace
+Set up a dedicated namespace for MLflow resources.
+
+1. **Create and Activate Namespace**:
+   ```bash
+   kubectl create namespace mlflow
+   kubectl config set-context --current --namespace=mlflow
+   ```
+
+2. **Verify Active Namespace**:
+   ```bash
+   kubectl config get-contexts
+   ```
+   - Confirm the current context (marked with `*`) shows `mlflow` as the namespace.
+
+---
+
+## Step 2: Create YAML Files with NFS Storage
+
+### 1. PostgreSQL PersistentVolume and PersistentVolumeClaim
 File: `postgres-pv-pvc.yaml`
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -37,8 +45,9 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: "/mnt/data/postgres"
+  nfs:
+    path: /mnt/postgres  # NFS share for PostgreSQL data
+    server: 192.168.1.185  # NFS server IP
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -53,8 +62,9 @@ spec:
       storage: 5Gi
 ```
 
-#### 2. **MLflow PersistentVolume and PersistentVolumeClaim**
+### 2. MLflow PersistentVolume and PersistentVolumeClaim
 File: `mlflow-pv-pvc.yaml`
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -62,12 +72,13 @@ metadata:
   name: mlflow-pv
 spec:
   capacity:
-    storage: 10Gi
+    storage: 20Gi  # Increased from 10Gi for flexibility
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: "/mnt/data/mlflow"
+  nfs:
+    path: /mnt/mlflow  # NFS share for MLflow artifacts
+    server: 192.168.1.185  # NFS server IP
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -79,11 +90,12 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 20Gi
 ```
 
-#### 3. **Postgres Deployment, Service, and ConfigMap**
+### 3. PostgreSQL Deployment, Service, and ConfigMap
 File: `postgres-deployment.yaml`
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -124,6 +136,15 @@ spec:
           mountPath: /var/lib/postgresql/data
         - name: init-script
           mountPath: /docker-entrypoint-initdb.d
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - admin
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
@@ -156,8 +177,9 @@ data:
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 ```
 
-#### 4. **MLflow Deployment and Service**
+### 4. MLflow Deployment and Service
 File: `mlflow-deployment.yaml`
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -179,10 +201,10 @@ spec:
         image: jahangir842/mlflow-with-psycopg2:v2.20.3
         resources:
           limits:
-            memory: "1Gi"  # Increased from 512Mi
+            memory: "1Gi"
             cpu: "500m"
           requests:
-            memory: "512Mi"  # Increased from 256Mi
+            memory: "512Mi"
             cpu: "250m"
         ports:
         - containerPort: 5000
@@ -225,94 +247,117 @@ spec:
   - port: 5000
     targetPort: 5000
     nodePort: 30500
-
 ```
 
 ---
 
-### Step 3: Apply the New YAML Files
-
-1. **Ensure Host Paths Exist**:
-   On your cluster nodes, create the directories:
-   ```bash
-   sudo mkdir -p /mnt/data/mlflow /mnt/data/postgres
-   sudo chmod -R 777 /mnt/data/mlflow /mnt/data/postgres  # Adjust permissions as needed
-   ```
-
-2. **Apply the YAML Files**:
-   ```bash
-   kubectl apply -f postgres-pv-pvc.yaml
-   kubectl apply -f mlflow-pv-pvc.yaml
-   kubectl apply -f postgres-deployment.yaml
-   kubectl apply -f mlflow-deployment.yaml
-   ```
+## Step 3: Apply Kubernetes Configurations
+Deploy the resources:
+```bash
+kubectl apply -f postgres-pv-pvc.yaml
+kubectl apply -f mlflow-pv-pvc.yaml
+kubectl apply -f postgres-deployment.yaml
+kubectl apply -f mlflow-deployment.yaml
+```
 
 ---
 
-### Step 4: Verify the Setup
+## Step 4: Verify the Setup
 
 1. **Check Pods**:
    ```bash
    kubectl get pods -n mlflow -o wide
    ```
-   - Expected: Both `mlflow` and `postgres` pods in `Running` state.
+   - Expected: `mlflow-*` and `postgres-*` pods in `Running` state with `Ready: 1/1`.
 
 2. **Check PVCs**:
    ```bash
    kubectl get pvc -n mlflow
    ```
    - Expected:
-     - `mlflow-pvc`: `Bound` to `mlflow-pv`.
-     - `postgres-pvc`: `Bound` to `postgres-pv`.
+     ```
+     NAME          STATUS   VOLUME        CAPACITY   ACCESS MODES
+     mlflow-pvc    Bound    mlflow-pv     20Gi       RWO
+     postgres-pvc  Bound    postgres-pv   5Gi        RWO
+     ```
 
 3. **Check PVs**:
    ```bash
    kubectl get pv
    ```
    - Expected:
-     - `mlflow-pv`: `Bound` to `mlflow/mlflow-pvc`.
-     - `postgres-pv`: `Bound` to `mlflow/postgres-pvc`.
+     ```
+     NAME          CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM
+     mlflow-pv     20Gi       RWO            Retain           Bound    mlflow/mlflow-pvc
+     postgres-pv   5Gi        RWO            Retain           Bound    mlflow/postgres-pvc
+     ```
 
 4. **Check Services**:
    ```bash
    kubectl get svc -n mlflow -o wide
    ```
    - Expected:
-     - `mlflow`: `ClusterIP` with port `5000:30500/TCP`.
-     - `postgres`: `ClusterIP` with port `5432`.
+     ```
+     NAME      TYPE       CLUSTER-IP     PORT(S)
+     mlflow    NodePort   <cluster-ip>   5000:30500/TCP
+     postgres  ClusterIP  <cluster-ip>   5432/TCP
+     ```
 
 5. **Check Logs**:
-   ```bash
-   kubectl logs -f deployment/postgres -n mlflow
-   kubectl logs -f deployment/mlflow -n mlflow
-   ```
-   - Expected:
-     - Postgres: `database system is ready to accept connections`.
-     - MLflow: No `Connection timed out` or `No route to host` errors.
+   - **PostgreSQL**:
+     ```bash
+     kubectl logs -f deployment/postgres -n mlflow
+     ```
+     - Expected: `database system is ready to accept connections`.
+   - **MLflow**:
+     ```bash
+     kubectl logs -f deployment/mlflow -n mlflow
+     ```
+     - Expected: No `Connection refused` or `OperationalError` messages.
 
 6. **Test Connectivity**:
    ```bash
-   kubectl exec -it <mlflow-pod-name> -n mlflow -- bash
+   MLFLOW_POD=$(kubectl get pods -n mlflow -l app=mlflow -o jsonpath="{.items[0].metadata.name}")
+   kubectl exec -it $MLFLOW_POD -n mlflow -- bash
+   apt-get update && apt-get install -y netcat
+   nc -zv postgres 5432
+   exit
    ```
-   - Inside:
-     ```bash
-     apt-get update && apt-get install -y netcat
-     nc -zv <postgres-pod-ip> 5432
-     nc -zv postgres 5432
-     ```
+   - Expected: `Connection to postgres 5432 port [tcp/postgresql] succeeded!`
 
 7. **Access MLflow UI**:
-   - Get node IP:
-     ```bash
-     kubectl get nodes -o wide
-     ```
-   - Open: `http://<node-ip>:30500`
+   ```bash
+   kubectl get nodes -o wide
+   ```
+   - Open: `http://<node-ip>:30500` (e.g., `http://192.168.1.182:30500`).
+   - Expected: MLflow UI loads successfully.
 
 ---
 
-### Notes
-- **Readiness Probe**: Added to MLflow to ensure it’s only `Ready` when the server is up.
-- **Namespace**: All resources are in `mlflow`; ensure this namespace exists (`kubectl create namespace mlflow` if needed).
-- **Networking**: If `No route to host` reoccurs, we’ll debug Calico after confirming the pods run.
+## Notes
+- **NFS Persistence**: The NFS server at `192.168.1.185` ensures data persists across pod restarts and node failures.
+- **PostgreSQL Permissions**: The `/mnt/postgres` directory must be owned by UID 999 (GID 999) with `700` permissions to avoid `chown` errors during PostgreSQL startup.
+- **Readiness Probes**: Added to both MLflow and PostgreSQL to ensure they’re marked `Ready` only when fully operational.
+- **Namespace**: Resources are in the `mlflow` namespace; recreate if missing (`kubectl create namespace mlflow`).
+- **Networking**: If `No route to host` occurs, verify NFS connectivity and firewall rules on `192.168.1.185` and worker nodes.
 
-Please apply these files and share the outputs from the verification steps above. Let me know how it goes!
+---
+
+
+---
+
+## Next Steps
+1. **Apply and Verify**:
+   - Deploy the YAML files and share outputs from verification steps (e.g., `kubectl get pods -n mlflow -o wide`, `kubectl logs`).
+2. **Restore Backup (If Applicable)**:
+   If you have an MLflow database backup:
+   ```bash
+   POSTGRES_POD=$(kubectl get pods -n mlflow -l app=postgres -o jsonpath="{.items[0].metadata.name}")
+   kubectl cp backup_mlflow.dump $POSTGRES_POD:/tmp/backup_mlflow.dump -n mlflow
+   kubectl exec -it $POSTGRES_POD -n mlflow -- bash -c "PGPASSWORD=pakistan pg_restore -U admin -d mlflowdb --verbose /tmp/backup_mlflow.dump"
+   ```
+3. **Troubleshooting**:
+   - If PostgreSQL crashes with `chown` errors, recheck `/mnt/postgres` permissions on `192.168.1.185`.
+   - If MLflow isn’t ready, ensure PostgreSQL is stable first.
+
+Let me know how it goes or if you need further assistance!
