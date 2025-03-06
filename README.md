@@ -10,7 +10,7 @@
    pip install mlflow
    ```
 
-2. **Access to the Tracking Server**: Ensure that your MLflow server is running and accessible to your team members. They should be able to access the server’s URL (e.g., http://192.168.1.185:30500) from their machines.
+2. **Access to the Tracking Server**: Ensure that your MLflow server is running and accessible to your team members. They should be able to access the server’s URL (e.g., http://192.168.1.183:30500) from their machines.
 
 ---
 
