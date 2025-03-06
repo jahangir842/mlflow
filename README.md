@@ -12,7 +12,7 @@
    pip install mlflow
    ```
 
-2. **Access to the Tracking Server**: Ensure that your MLflow server is running and accessible to your team members. They should be able to access the server’s URL (e.g., http://192.168.1.183:30500) from their machines.
+2. **Access to the Tracking Server**: Ensure that your MLflow server is running and accessible to your team members. They should be able to access the server’s URL (e.g., http://192.168.1.185:30500) from their machines.
 
 ---
 
@@ -35,14 +35,14 @@ Install the NFS client utilities on each machine that will access the shared dir
 On the client machine, set up a directory to serve as the mount point for the shared directory. Run the following command:  
 
 ```bash
-sudo mkdir -p /mnt/data/mlflow
+sudo mkdir -p /mnt/mlflow
 ```
 
 **Mount the Shared Directory**  
 Mount the shared directory exported by the server to the client’s mount point using the command below:  
 
 ```bash
-sudo mount 192.168.1.183:/mnt/data/mlflow /mnt/data/mlflow
+sudo mount 192.168.1.185:/mnt/mlflow /mnt/mlflow
 ```  
 
 Replace `<server_IP>` with the IP address of the NFS server.
@@ -57,7 +57,7 @@ sudo nano /etc/fstab
 Add the following line:
 
 ```plaintext
-192.168.1.183:/mnt/data/mlflow /mnt/data/mlflow nfs defaults 0 0
+192.168.1.185:/mnt/mlflow /mnt/mlflow nfs defaults 0 0
 ```
 
 Save and exit the file, then test the configuration with:
@@ -82,7 +82,7 @@ sudo mount -a
 2. **Go to "This PC"**: In the left sidebar, click "This PC".
 3. **Map Network Drive**: 
    - Right-click "This PC" and select "Map Network Drive".
-   - Choose a Drive letter and enter the NFS server path: `\\<MLFLOW_SERVER_IP>\<NFS_SHARE_PATH>`. For example: `\\192.168.1.183\opt\mlflow`.
+   - Choose a Drive letter and enter the NFS server path: `\\<MLFLOW_SERVER_IP>\<NFS_SHARE_PATH>`. For example: `\\192.168.1.185\opt\mlflow`.
 4. **Reconnect at Sign-in**: Check "Reconnect at sign-in" if you want it to reconnect automatically.
 5. **Finish**: Click **Finish**. The share will be mounted and accessible from "This PC".
 
@@ -98,7 +98,7 @@ To ensure that all experiment logs are directed to your centralized MLflow serve
 import mlflow
 
 # Set the tracking URI to the centralized MLflow server
-mlflow.set_tracking_uri("http://192.168.1.183:30500")
+mlflow.set_tracking_uri("http://192.168.1.185:30500")
 ```
 This step will configure MLflow to log experiments to the specified server every time the script is run.
 
@@ -132,7 +132,7 @@ with mlflow.start_run(run_name="Run Name"):
     mlflow.log_metric("accuracy", 0.85)
 
     # Log an artifact (e.g., a file)
-    mlflow.log_artifact("path/to/output/file")
+    mlflow.log_artifact("/mnt/mlflow")
     # e.g mlflow.log_artifact("C:/windows/users/daniel/project/llm")
     # e.g mlflow.log_artifact("/home/daniel/project")
 
