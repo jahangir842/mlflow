@@ -55,7 +55,8 @@ sudo nano /etc/fstab
 Add the following line:
 
 ```plaintext
-192.168.1.185:/mnt/mlflow /mnt/mlflow nfs defaults 0 0
+192.168.1.185:/mnt/mlflow /mnt/mlflow nfs rw,sync,no_root_squash,anonuid=65534,anongid=65534 0 0
+# 192.168.1.185:/mnt/mlflow /mnt/mlflow nfs defaults 0 0
 ```
 
 Save and exit the file, then test the configuration with:
