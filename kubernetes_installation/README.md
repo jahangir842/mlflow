@@ -2,6 +2,13 @@
 
 This guide deploys an MLflow tracking server with a PostgreSQL backend on Kubernetes, leveraging an NFS server at `192.168.1.185` for persistent storage of PostgreSQL data and MLflow artifacts. It ensures data persists across pod restarts and node failures without requiring a StatefulSet.
 
+
+---
+**Official MLflow with Docker**: https://github.com/mlflow/mlflow/pkgs/container/mlflow
+
+**Customised Mlflow Image with Postgres Capability:** https://hub.docker.com/repository/docker/jahangir842/mlflow-with-psycopg2/general
+
+
 ---
 
 ## Prerequisites

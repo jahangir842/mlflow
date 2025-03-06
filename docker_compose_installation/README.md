@@ -2,6 +2,14 @@
 
 This guide helps you set up MLflow with PostgreSQL backend using Docker Compose.
 
+---
+
+**Official MLflow with Docker**: https://github.com/mlflow/mlflow/pkgs/container/mlflow
+
+**Customised Mlflow Image with Postgres Capability:** https://hub.docker.com/repository/docker/jahangir842/mlflow-with-psycopg2/general
+
+---
+
 ## Prerequisites
 
 - Docker installed ([Docker Installation Guide](https://docs.docker.com/get-docker/))
