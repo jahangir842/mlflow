@@ -28,6 +28,11 @@ cd docker_compose_installation
 docker build -t mlflow-with-psycopg2:v2.20.3 -f ../Dockerfile ..
 ```
 
+### 1. Credentials
+
+put the .env file in .gitignore file and change the credentials
+
+
 ### 2. Start the Services
 
 ```bash
