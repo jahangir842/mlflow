@@ -112,7 +112,7 @@ import mlflow
 mlflow.set_experiment("LLM Experiment by Jahangir")
 
 # Start a new MLflow run
-with mlflow.start_run(run_name="Run Name"):
+with mlflow.start_run(run_name="First Run"):
     # Log general hyperparameters
     mlflow.log_param("learning_rate", 0.001)
     mlflow.log_param("epochs", 10)
