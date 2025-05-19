@@ -109,7 +109,7 @@ Once the tracking URI is set, you can start logging experiments. Below is an exa
 import mlflow
 
 # Set the experiment name (Change the experiment name and also add developer name)
-mlflow.set_experiment("LLM Experiment by Daniel")
+mlflow.set_experiment("LLM Experiment by Jahangir")
 
 # Start a new MLflow run
 with mlflow.start_run(run_name="Run Name"):
