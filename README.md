@@ -10,7 +10,7 @@
    pip install mlflow
    ```
 
-2. **Access to the Tracking Server**: Ensure that your MLflow server is running and accessible to your team members. They should be able to access the server’s URL (e.g., http://192.168.1.183:30500) from their machines.
+2. **Access to the Tracking Server**: Ensure that your MLflow server is running and accessible to your team members. They should be able to access the server’s URL (e.g., http://192.168.3.12:5000) from their machines.
 
 ---
 
@@ -82,7 +82,7 @@ sudo mount -a
 2. **Go to "This PC"**: In the left sidebar, click "This PC".
 3. **Map Network Drive**: 
    - Right-click "This PC" and select "Map Network Drive".
-   - Choose a Drive letter and enter the NFS server path: `\\<MLFLOW_SERVER_IP>\<NFS_SHARE_PATH>`. For example: `\\192.168.1.185\opt\mlflow`.
+   - Choose a Drive letter and enter the NFS server path: `\\<MLFLOW_SERVER_IP>\<NFS_SHARE_PATH>`. For example: `\\192.168.3.12\opt\mlflow`.
 4. **Reconnect at Sign-in**: Check "Reconnect at sign-in" if you want it to reconnect automatically.
 5. **Finish**: Click **Finish**. The share will be mounted and accessible from "This PC".
 
@@ -97,7 +97,7 @@ To ensure that all experiment logs are directed to your centralized MLflow serve
 import mlflow
 
 # Set the tracking URI to the centralized MLflow server
-mlflow.set_tracking_uri("http://192.168.1.183:30500")
+mlflow.set_tracking_uri("http://192.168.3.12:5000")
 ```
 This step will configure MLflow to log experiments to the specified server every time the script is run.
 
