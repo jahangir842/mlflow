@@ -13,7 +13,7 @@
 
   tasks:
     - name: Install required packages
-      dnf:
+      ansible.builtin.dnf:
         name:
           - git
           - nano
@@ -24,7 +24,7 @@
         state: present
 
     - name: Configure network interface
-      nmcli:
+      ansible.builtin.nmcli:
         conn_name: "{{ interface }}"
         ifname: "{{ interface }}"
         type: ethernet
@@ -36,18 +36,18 @@
       notify: Restart NetworkManager
 
     - name: Ensure NetworkManager is running
-      systemd:
+      ansible.builtin.systemd:
         name: NetworkManager
         state: started
         enabled: yes
 
     - name: Add Docker CE repository
-      command: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+      ansible.builtin.command: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
       args:
         creates: /etc/yum.repos.d/docker-ce.repo
 
     - name: Install Docker and related packages
-      dnf:
+      ansible.builtin.dnf:
         name:
           - docker-ce
           - docker-ce-cli
@@ -57,25 +57,25 @@
         state: present
 
     - name: Enable and start Docker service
-      systemd:
+      ansible.builtin.systemd:
         name: docker
         state: started
         enabled: yes
 
     - name: Install docker-compose
-      get_url:
+      ansible.builtin.get_url:
         url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-x86_64"
         dest: /usr/local/bin/docker-compose
         mode: '0755'
 
     - name: Create docker-compose symlink
-      file:
+      ansible.builtin.file:
         src: /usr/local/bin/docker-compose
         dest: /usr/bin/docker-compose
         state: link
 
     - name: Configure firewall ports
-      firewalld:
+      ansible.builtin.firewalld:
         port: "{{ item }}"
         permanent: yes
         state: enabled
@@ -85,7 +85,7 @@
         - 5000/tcp
 
     - name: Enable NFS services in firewall
-      firewalld:
+      ansible.builtin.firewalld:
         service: "{{ item }}"
         permanent: yes
         state: enabled
@@ -96,7 +96,7 @@
         - mountd
 
     - name: Enable and start NFS server
-      systemd:
+      ansible.builtin.systemd:
         name: nfs-server
         state: started
         enabled: yes
@@ -113,7 +113,7 @@
         - { path: "/mnt/postgres", owner: "999", group: "999", mode: "0700" }
 
     - name: Configure NFS exports
-      copy:
+      ansible.builtin.copy:
         content: |
           /mnt/mlflow *(rw,sync,no_subtree_check)
           /mnt/postgres *(rw,sync,no_subtree_check)
@@ -121,7 +121,7 @@
       notify: Reload NFS exports
 
     - name: Clone MLflow repository
-      git:
+      ansible.builtin.git:
         repo: "{{ mlflow_repo }}"
         dest: "{{ mlflow_dir }}"
         update: yes
@@ -129,7 +129,7 @@
       become_user: adminit
 
     - name: Ensure docker-compose is up
-      command: docker-compose up -d
+      ansible.builtin.command: docker-compose up -d
       args:
         chdir: "{{ mlflow_dir }}/docker_compose_installation"
       become: no
@@ -137,16 +137,16 @@
 
   handlers:
     - name: Restart NetworkManager
-      systemd:
+      ansible.builtin.systemd:
         name: NetworkManager
         state: restarted
 
     - name: Reload NFS exports
-      command: exportfs -a
+      ansible.builtin.command: exportfs -a
       changed_when: true
 
   pre_tasks:
     - name: Ensure adminit user exists
-      user:
+      ansible.builtin.user:
         name: adminit
         state: present
