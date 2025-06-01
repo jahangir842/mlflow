@@ -1,0 +1,24 @@
+---
+- name: Configure firewall
+  hosts: all
+  become: yes
+  tasks:
+    - name: Open ports for MLflow and Postgres
+      firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        state: enabled
+        immediate: yes
+      loop:
+        - 5432/tcp
+        - 5000/tcp
+    - name: Enable NFS services in firewall
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        state: enabled
+        immediate: yes
+      loop:
+        - nfs
+        - rpc-bind
+        - mountd
