@@ -1,0 +1,31 @@
+---
+- name: Configure network settings
+  hosts: all
+  become: yes
+  vars:
+    ip_address: "192.168.100.220"
+    gateway: "192.168.100.1"
+    dns: "8.8.8.8"
+    interface: "enp0s3"
+  tasks:
+    - name: Configure network interface
+      nmcli:
+        conn_name: "{{ interface }}"
+        ifname: "{{ interface }}"
+        type: ethernet
+        ip4: "{{ ip_address }}/24"
+        gw4: "{{ gateway }}"
+        dns4: "{{ dns }}"
+        state: present
+        method4: manual
+      notify: Restart NetworkManager
+    - name: Ensure NetworkManager is running
+      systemd:
+        name: NetworkManager
+        state: started
+        enabled: yes
+  handlers:
+    - name: Restart NetworkManager
+      systemd:
+        name: NetworkManager
+        state: restarted
