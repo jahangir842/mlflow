@@ -1,0 +1,31 @@
+---
+- name: Configure NFS server
+  hosts: all
+  become: yes
+  tasks:
+    - name: Enable and start NFS server
+      systemd:
+        name: nfs-server
+        state: started
+        enabled: yes
+    - name: Create NFS directories
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: "/mnt/mlflow", owner: "nobody", group: "nobody", mode: "0777" }
+        - { path: "/mnt/postgres", owner: "999", group: "999", mode: "0700" }
+    - name: Configure NFS exports
+      copy:
+        content: |
+          /mnt/mlflow *(rw,sync,no_subtree_check)
+          /mnt/postgres *(rw,sync,no_subtree_check)
+        dest: /etc/exports
+      notify: Reload NFS exports
+  handlers:
+    - name: Reload NFS exports
+      command: exportfs -a
+      changed_when: true
