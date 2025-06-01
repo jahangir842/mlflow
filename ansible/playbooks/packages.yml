@@ -4,7 +4,7 @@
   become: yes
   tasks:
     - name: Install basic packages
-      dnf:
+      ansible.builtin.dnf:
         name:
           - git
           - nano
@@ -14,11 +14,11 @@
           - nfs-utils
         state: present
     - name: Add Docker CE repository
-      command: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+      ansible.builtin.command: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
       args:
         creates: /etc/yum.repos.d/docker-ce.repo
     - name: Install Docker and related packages
-      dnf:
+      ansible.builtin.dnf:
         name:
           - docker-ce
           - docker-ce-cli
@@ -27,17 +27,17 @@
           - docker-compose-plugin
         state: present
     - name: Enable and start Docker service
-      systemd:
+      ansible.builtin.systemd:
         name: docker
         state: started
         enabled: yes
     - name: Install docker-compose
-      get_url:
+      ansible.builtin.et_url:
         url: "https://github.com/docker/compose/releases/download/v2.36.0/docker-compose-linux-x86_64"
         dest: /usr/local/bin/docker-compose
         mode: '0755'
     - name: Create docker-compose symlink
-      file:
+      ansible.builtin.file:
         src: /usr/local/bin/docker-compose
         dest: /usr/bin/docker-compose
         state: link
