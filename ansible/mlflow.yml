@@ -1,0 +1,18 @@
+---
+- name: Deploy MLflow
+  hosts: all
+  become: no
+  become_user: adminit
+  vars:
+    mlflow_repo: "https://github.com/jahangir842/mlflow.git"
+    mlflow_dir: "/home/adminit/mlflow"
+  tasks:
+    - name: Clone MLflow repository
+      git:
+        repo: "{{ mlflow_repo }}"
+        dest: "{{ mlflow_dir }}"
+        update: yes
+    - name: Ensure docker-compose is up
+      command: docker-compose up -d
+      args:
+        chdir: "{{ mlflow_dir }}/docker_compose_installation"
