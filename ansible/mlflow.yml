@@ -8,11 +8,11 @@
     mlflow_dir: "/home/adminit/mlflow"
   tasks:
     - name: Clone MLflow repository
-      git:
+      ansible.builtin.git:
         repo: "{{ mlflow_repo }}"
         dest: "{{ mlflow_dir }}"
         update: yes
     - name: Ensure docker-compose is up
-      command: docker-compose up -d
-      args:
+      ansible.builtin.command:
+        cmd: docker-compose up -d
         chdir: "{{ mlflow_dir }}/docker_compose_installation"
