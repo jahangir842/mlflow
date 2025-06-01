@@ -4,7 +4,7 @@
   become: yes
   tasks:
     - name: Open ports for MLflow and Postgres
-      firewalld:
+      ansible.builtin.firewalld:
         port: "{{ item }}"
         permanent: yes
         state: enabled
@@ -13,7 +13,7 @@
         - 5432/tcp
         - 5000/tcp
     - name: Enable NFS services in firewall
-      firewalld:
+      ansible.builtin.firewalld:
         service: "{{ item }}"
         permanent: yes
         state: enabled
