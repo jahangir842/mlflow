@@ -15,7 +15,7 @@ sudo visudo
 Then add the following line (replace `jahangir` with your actual username):
 
 ```bash
-jahangir ALL=(ALL) NOPASSWD:ALL
+userid ALL=(ALL) NOPASSWD:ALL
 ```
 
 > ⚠️ Use with caution; this has security implications in multi-user or production environments.
