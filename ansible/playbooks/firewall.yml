@@ -3,6 +3,17 @@
   hosts: all
   become: yes
   tasks:
+    - name: Install firewalld
+      ansible.builtin.package:
+        name: firewalld
+        state: present
+
+    - name: Ensure firewalld is started and enabled
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: yes
+
     - name: Open ports for MLflow and Postgres
       ansible.builtin.firewalld:
         port: "{{ item }}"
@@ -12,6 +23,7 @@
       loop:
         - 5432/tcp
         - 5000/tcp
+
     - name: Enable NFS services in firewall
       ansible.builtin.firewalld:
         service: "{{ item }}"

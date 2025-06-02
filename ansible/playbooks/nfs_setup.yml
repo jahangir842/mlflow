@@ -4,12 +4,13 @@
   become: yes
   tasks:
     - name: Enable and start NFS server
-      systemd:
+      ansible.builtin.systemd:
         name: nfs-server
         state: started
         enabled: yes
+
     - name: Create NFS directories
-      file:
+      ansible.builtin.file:
         path: "{{ item.path }}"
         state: directory
         owner: "{{ item.owner }}"
@@ -18,14 +19,17 @@
       loop:
         - { path: "/mnt/mlflow", owner: "nobody", group: "nobody", mode: "0777" }
         - { path: "/mnt/postgres", owner: "999", group: "999", mode: "0700" }
+
     - name: Configure NFS exports
-      copy:
+      ansible.builtin.copy:
         content: |
           /mnt/mlflow *(rw,sync,no_subtree_check)
           /mnt/postgres *(rw,sync,no_subtree_check)
         dest: /etc/exports
       notify: Reload NFS exports
+
   handlers:
     - name: Reload NFS exports
-      command: exportfs -a
+      ansible.builtin.command:
+        cmd: exportfs -a
       changed_when: true

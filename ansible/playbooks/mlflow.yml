@@ -1,18 +1,32 @@
 ---
 - name: Deploy MLflow
   hosts: all
-  become: no
-  become_user: adminit
+  become: true
   vars:
     mlflow_repo: "https://github.com/jahangir842/mlflow.git"
     mlflow_dir: "/home/adminit/mlflow"
+    mlflow_user: "adminit"
+
   tasks:
-    - name: Clone MLflow repository
+    - name: Ensure the adminit user exists
+      ansible.builtin.user:
+        name: "{{ mlflow_user }}"
+        state: present
+
+    - name: Ensure adminit user is added to docker group
+      ansible.builtin.user:
+        name: "{{ mlflow_user }}"
+        groups: docker
+        append: yes
+
+    - name: Clone MLflow repository as adminit user
       ansible.builtin.git:
         repo: "{{ mlflow_repo }}"
         dest: "{{ mlflow_dir }}"
         update: yes
-    - name: Ensure docker-compose is up
+      become_user: "{{ mlflow_user }}"
+
+    - name: Ensure docker-compose is up 
       ansible.builtin.command:
         cmd: docker-compose up -d
         chdir: "{{ mlflow_dir }}/docker_compose_installation"

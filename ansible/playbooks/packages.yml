@@ -1,23 +1,32 @@
 ---
-- name: Install required packages
+- name: Install required packages and Docker components
   hosts: all
   become: yes
+
   tasks:
-    - name: Install basic packages
+    - name: Install EPEL release and essential packages
       ansible.builtin.dnf:
         name:
+          - epel-release
           - git
           - nano
-          - htop
-          - epel-release
           - dnf-plugins-core
           - nfs-utils
         state: present
-    - name: Add Docker CE repository
-      ansible.builtin.command: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+
+    - name: Install htop (optional, from EPEL)
+      ansible.builtin.dnf:
+        name: htop
+        state: present
+      ignore_errors: yes
+
+    - name: Add Docker CE repository if not already present
+      ansible.builtin.command:
+        cmd: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
       args:
         creates: /etc/yum.repos.d/docker-ce.repo
-    - name: Install Docker and related packages
+
+    - name: Install Docker CE and related packages
       ansible.builtin.dnf:
         name:
           - docker-ce
@@ -26,17 +35,20 @@
           - docker-buildx-plugin
           - docker-compose-plugin
         state: present
+
     - name: Enable and start Docker service
       ansible.builtin.systemd:
         name: docker
         state: started
         enabled: yes
-    - name: Install docker-compose
-      ansible.builtin.et_url:
+
+    - name: Download docker-compose binary
+      ansible.builtin.get_url:
         url: "https://github.com/docker/compose/releases/download/v2.36.0/docker-compose-linux-x86_64"
         dest: /usr/local/bin/docker-compose
         mode: '0755'
-    - name: Create docker-compose symlink
+
+    - name: Create symbolic link for docker-compose
       ansible.builtin.file:
         src: /usr/local/bin/docker-compose
         dest: /usr/bin/docker-compose
