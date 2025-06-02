@@ -1,2 +1,3 @@
 linux_installation/.mlflow
 linux_installation/artifacts
+docker_compose_installation/.env
