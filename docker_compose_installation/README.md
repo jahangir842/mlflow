@@ -77,10 +77,10 @@ Default credentials (can be changed in docker-compose.yml):
 
 ```bash
 # Start services
-docker-compose up -d
+docker-compose --env-file .env up -d
 
 # Stop services
-docker-compose down
+docker-compose --env-file .env down
 
 # View logs
 docker-compose logs -f
