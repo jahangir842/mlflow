@@ -1,36 +1,25 @@
-## MLflow Server Deployment Guide
+# **MLflow Server Deployment Guide**
 
-### Step 1: Configure the Ansible Control Node
+## **On the Ansible Managed Node**
 
-Please refer to the documentation below to ensure proper configuration of your Ansible control node:
+### **Step 1: Server Preparation**
+
+Ensure your Ansible control node is properly set up before proceeding. Refer to the following guide for detailed configuration instructions:
 
 🔗 [Ansible Control Node Configuration Guide](https://github.com/jahangir842/ansible/blob/main/README.md)
 
 ---
 
-### Step 2: Configure Environment Variables
+## **From the Ansible Control Node**
 
-Copy the example environment file and rename it as `.env`:
+### **Step 1: Deploy the MLflow Server**
 
-```bash
-cp ./docker_compose_installation/.env.example ./docker_compose_installation/.env
-```
+1. Verify that your `inventory.yml` file contains the correct host details for your managed node(s).
 
-Edit the newly created `.env` file to update the necessary credentials and configuration values.
-
-> **Note:** To avoid exposing sensitive information, ensure that the `.env` file is listed in your `.gitignore` and not committed to the Git repository.
-
----
-
-#### Step 2: Install MLflow Server (From Control Node)
-
-To deploy the MLflow server, first ensure your `inventory.yml` is correctly configured with the appropriate host details.
-
-Then, execute the following Ansible playbooks in the order listed below:
+2. Run the following Ansible playbooks sequentially:
 
 ```bash
 ansible-playbook -i inventory.yml ./playbooks/network_setup.yml
-
 ```
 
 ```bash
@@ -45,19 +34,43 @@ ansible-playbook -i inventory.yml ./playbooks/firewall.yml
 ansible-playbook -i inventory.yml ./playbooks/nfs_setup.yml
 ```
 
+## Clone the Mlflow Server
+
 ```bash
-ansible-playbook -i inventory.yml ./playbooks/mlflow.yml
+ansible-playbook -i inventory.yml ./playbooks/clone_mlflow.yml
+```
+
+
+### Set Up Environment Variables
+
+Create a copy of the example environment file and rename it:
+
+```bash
+cp ./docker_compose_installation/.env.example ./docker_compose_installation/.env
+```
+
+Edit the `.env` file to input your environment-specific credentials and configurations.
+
+> ⚠️ **Important:** Never commit sensitive information to version control. Ensure `.env` is listed in `.gitignore`.
+
+
+
+## Run the Mlflow Server
+
+```bash
+ansible-playbook -i inventory.yml ./playbooks/run_mlflow.yml
 ```
 
 ---
 
-Open a web browser and navigate to the MLflow server using the following URL:
+### **Accessing MLflow**
+
+Once deployment is complete, open your browser and visit the MLflow server:
 
 ```
-http://192.168.18.50:5000/
+http://<your-server-ip>:5000/
 ```
 
-Replace the IP address with the actual IP address of your MLflow server.
+Replace `<your-server-ip>` with the actual IP address of the server (e.g., `192.168.18.50`).
 
 ---
-
