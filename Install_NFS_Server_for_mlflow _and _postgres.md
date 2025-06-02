@@ -1,6 +1,6 @@
 # NFS Server Installation for MLflow and PostgreSQL
 
-**Note:** You can follow the ansible method to install MLflow and NFS Server 
+**Note:** You can follow the ansible method to install MLflow and NFS Server https://github.com/jahangir842/mlflow/tree/main/ansible
 
 This guide configures an NFS server to provide persistent storage for an MLflow tracking server and PostgreSQL backend on Kubernetes, using shared directories `/mnt/mlflow` (for MLflow artifacts) and `/mnt/postgres` (for PostgreSQL data). It includes specific permissions for PostgreSQL to avoid startup issues.
 
