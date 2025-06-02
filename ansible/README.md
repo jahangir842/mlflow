@@ -49,4 +49,15 @@ ansible-playbook -i inventory.yml ./playbooks/nfs_setup.yml
 ansible-playbook -i inventory.yml ./playbooks/mlflow.yml
 ```
 
-Each playbook addresses a specific aspect of the deployment process—ranging from network configuration to package installation, firewall rules, NFS setup, and finally the MLflow server deployment. This structured approach ensures a consistent, automated, and reliable MLflow environment.
+---
+
+Open a web browser and navigate to the MLflow server using the following URL:
+
+```
+http://192.168.18.50:5000/
+```
+
+Replace the IP address with the actual IP address of your MLflow server.
+
+---
+
