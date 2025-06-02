@@ -38,6 +38,18 @@ https://github.com/jahangir842/ansible
 
 ---
 
+To allow SSH through `firewalld`, run the following commands:
+
+```bash
+sudo firewall-cmd --permanent --add-service=ssh
+sudo firewall-cmd --reload
+```
+
+> ✅ This adds and applies the SSH rule permanently.
+
+
+---
+
 ### 🔓 Configure Passwordless `sudo` (Optional)
 
 To avoid password prompts entirely, configure passwordless `sudo` for your user:
