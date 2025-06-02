@@ -1,75 +1,18 @@
-### MLflow Server Installation
+## MLflow Server Deployment Guide
 
-## configure ansible 
+#### Step 1: Configure the Ansible Client Node
 
-https://github.com/jahangir842/ansible
+Refer to the following documentation to configure your Ansible client node properly:
 
----
-
-### Enable SSH Password Authentication (Manual Method)
-
-1. **Open the SSH daemon configuration file** using a text editor:
-
-   ```bash
-   sudo nano /etc/ssh/sshd_config
-   ```
-
-2. **Locate the following directive**:
-
-   ```bash
-   #PasswordAuthentication no
-   ```
-
-3. **Uncomment and modify it as follows** to enable password authentication:
-
-   ```bash
-   PasswordAuthentication yes
-   ```
-
-4. **Save and close the file** (`Ctrl + O`, `Enter`, then `Ctrl + X` in `nano`).
-
-5. **Restart the SSH service** to apply the configuration changes:
-
-   ```bash
-   sudo systemctl restart ssh
-   ```
-
-> 🔐 **Important**: Enabling password authentication can increase security risks, especially on public-facing servers. Ensure strong passwords and consider additional security measures (e.g., fail2ban, firewalls).
+🔗 [Configure the Ansible Client Node](https://github.com/jahangir842/ansible/blob/main/README.md)
 
 ---
 
-To allow SSH through `firewalld`, run the following commands:
+#### Step 2: Install MLflow Server (From Control Node)
 
-```bash
-sudo firewall-cmd --permanent --add-service=ssh
-sudo firewall-cmd --reload
-```
+To deploy the MLflow server, first ensure your `inventory.yml` is correctly configured with the appropriate host details.
 
-> ✅ This adds and applies the SSH rule permanently.
-
-
----
-
-### 🔓 Configure Passwordless `sudo` (Optional)
-
-To avoid password prompts entirely, configure passwordless `sudo` for your user:
-
-```bash
-sudo visudo
-```
-
-Then add the following line (replace `jahangir` with your actual username):
-
-```bash
-userid ALL=(ALL) NOPASSWD:ALL
-```
-
-> ⚠️ Use with caution; this has security implications in multi-user or production environments.
-
----
-
-
-To install the MLflow server, execute the following Ansible playbooks in the specified order:
+Then, execute the following Ansible playbooks in the order listed below:
 
 ```bash
 ansible-playbook -i inventory.yml network_setup.yml
@@ -79,4 +22,4 @@ ansible-playbook -i inventory.yml nfs_setup.yml
 ansible-playbook -i inventory.yml mlflow.yml
 ```
 
-Each playbook performs a specific role in the setup process, ensuring a consistent and reliable MLflow deployment environment.
+Each playbook addresses a specific aspect of the deployment process—ranging from network configuration to package installation, firewall rules, NFS setup, and finally the MLflow server deployment. This structured approach ensures a consistent, automated, and reliable MLflow environment.
