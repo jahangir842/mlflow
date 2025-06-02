@@ -13,7 +13,7 @@ Please refer to the documentation below to ensure proper configuration of your A
 Copy the example environment file and rename it as `.env`:
 
 ```bash
-cp /home/jahangir/projects/mlflow/docker_compose_installation/.env.example /home/jahangir/projects/mlflow/docker_compose_installation/.env
+cp ./docker_compose_installation/.env.example ./docker_compose_installation/.env
 ```
 
 Edit the newly created `.env` file to update the necessary credentials and configuration values.
