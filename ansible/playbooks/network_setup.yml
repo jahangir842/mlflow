@@ -3,7 +3,7 @@
   hosts: all
   become: yes
   vars:
-    ip_address: "192.168.100.220"
+    ip_address: "192.168.100.155"
     gateway: "192.168.100.1"
     dns: "8.8.8.8"
     interface: "enp0s3"
