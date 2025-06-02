@@ -15,11 +15,11 @@ To deploy the MLflow server, first ensure your `inventory.yml` is correctly conf
 Then, execute the following Ansible playbooks in the order listed below:
 
 ```bash
-ansible-playbook -i inventory.yml network_setup.yml
-ansible-playbook -i inventory.yml packages.yml
-ansible-playbook -i inventory.yml firewall.yml
-ansible-playbook -i inventory.yml nfs_setup.yml
-ansible-playbook -i inventory.yml mlflow.yml
+ansible-playbook -i inventory.yml ./playbooks/network_setup.yml
+ansible-playbook -i inventory.yml ./playbooks/packages.yml
+ansible-playbook -i inventory.yml ./playbooks/firewall.yml
+ansible-playbook -i inventory.yml ./playbooks/nfs_setup.yml
+ansible-playbook -i inventory.yml ./playbooks/mlflow.yml
 ```
 
 Each playbook addresses a specific aspect of the deployment process—ranging from network configuration to package installation, firewall rules, NFS setup, and finally the MLflow server deployment. This structured approach ensures a consistent, automated, and reliable MLflow environment.
