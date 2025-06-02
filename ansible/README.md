@@ -1,10 +1,24 @@
 ## MLflow Server Deployment Guide
 
-#### Step 1: Configure the Ansible Client Node
+### Step 1: Configure the Ansible Control Node
 
-Refer to the following documentation to configure your Ansible client node properly:
+Please refer to the documentation below to ensure proper configuration of your Ansible control node:
 
-🔗 [Configure the Ansible Client Node](https://github.com/jahangir842/ansible/blob/main/README.md)
+🔗 [Ansible Control Node Configuration Guide](https://github.com/jahangir842/ansible/blob/main/README.md)
+
+---
+
+### Step 2: Configure Environment Variables
+
+Copy the example environment file and rename it as `.env`:
+
+```bash
+cp /home/jahangir/projects/mlflow/docker_compose_installation/.env.example /home/jahangir/projects/mlflow/docker_compose_installation/.env
+```
+
+Edit the newly created `.env` file to update the necessary credentials and configuration values.
+
+> **Note:** To avoid exposing sensitive information, ensure that the `.env` file is listed in your `.gitignore` and not committed to the Git repository.
 
 ---
 
