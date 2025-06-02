@@ -16,9 +16,22 @@ Then, execute the following Ansible playbooks in the order listed below:
 
 ```bash
 ansible-playbook -i inventory.yml ./playbooks/network_setup.yml
+
+```
+
+```bash
 ansible-playbook -i inventory.yml ./playbooks/packages.yml
+```
+
+```bash
 ansible-playbook -i inventory.yml ./playbooks/firewall.yml
+```
+
+```bash
 ansible-playbook -i inventory.yml ./playbooks/nfs_setup.yml
+```
+
+```bash
 ansible-playbook -i inventory.yml ./playbooks/mlflow.yml
 ```
 
