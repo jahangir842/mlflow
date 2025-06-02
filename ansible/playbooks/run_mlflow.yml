@@ -1,0 +1,12 @@
+---
+- name: Deploy MLflow
+  hosts: all
+  become: true
+  vars:
+    mlflow_dir: "/home/adminit/mlflow"
+
+  tasks:
+    - name: Ensure docker-compose is up 
+      ansible.builtin.command:
+        cmd: docker-compose up -d
+        chdir: "{{ mlflow_dir }}/docker_compose_installation"

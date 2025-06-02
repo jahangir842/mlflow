@@ -26,8 +26,3 @@
         update: yes
       become_user: "{{ mlflow_user }}"
 
-    - name: Ensure docker-compose is up 
-      ansible.builtin.command:
-        cmd: docker-compose --env-file .env up -d
-        chdir: "{{ mlflow_dir }}/docker_compose_installation"
-
