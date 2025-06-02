@@ -28,5 +28,6 @@
 
     - name: Ensure docker-compose is up 
       ansible.builtin.command:
-        cmd: docker-compose up -d
+        cmd: docker-compose --env-file .env up -d
         chdir: "{{ mlflow_dir }}/docker_compose_installation"
+
