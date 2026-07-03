@@ -19,7 +19,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   mlflow:
-    image: mlflow-with-psycopg2:v2.20.3  # Your custom image
+    image: mlflow-with-psycopg2:v3.14.0  # Your custom image
     depends_on:
       - postgres
     ports:

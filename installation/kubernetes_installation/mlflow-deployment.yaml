@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: mlflow
-        image: jahangir842/mlflow-with-psycopg2:v2.20.3
+        image: jahangir842/mlflow-with-psycopg2:v3.14.0
         resources:
           limits:
             memory: "1Gi"

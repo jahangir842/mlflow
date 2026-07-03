@@ -1,4 +1,4 @@
-FROM ghcr.io/mlflow/mlflow:v2.20.3
+FROM ghcr.io/mlflow/mlflow:v3.14.0
 
 # Install system + Python dependencies:
 #   - psycopg2-binary : PostgreSQL backend store driver
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && pip install --no-cache-dir \
         psycopg2-binary==2.9.9 \
         boto3==1.35.99 \
-        'mlflow[auth]==2.20.3' \
+        'mlflow[auth]==3.14.0' \
     && apt-get remove -y gcc \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*

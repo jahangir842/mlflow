@@ -1,5 +1,5 @@
 # Use the official MLflow image as the base
-FROM ghcr.io/mlflow/mlflow:v2.20.3
+FROM ghcr.io/mlflow/mlflow:v3.14.0
 
 # Install system dependencies for psycopg2
 RUN apt-get update && apt-get install -y \

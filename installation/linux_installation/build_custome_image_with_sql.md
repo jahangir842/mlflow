@@ -2,7 +2,7 @@
 ### Building a Custom MLflow Image with PostgreSQL Support**
 
 #### **Overview**
-- **Purpose**: Extend the official MLflow Docker image (`ghcr.io/mlflow/mlflow:v2.20.3`) to include the `psycopg2` Python module, enabling MLflow to connect to a PostgreSQL backend store in your Kubernetes cluster.
+- **Purpose**: Extend the official MLflow Docker image (`ghcr.io/mlflow/mlflow:v3.14.0`) to include the `psycopg2` Python module, enabling MLflow to connect to a PostgreSQL backend store in your Kubernetes cluster.
 - **Why Custom Image?**: The base MLflow image lacks PostgreSQL drivers (`psycopg2`), causing a `ModuleNotFoundError: No module named 'psycopg2'` when using `--backend-store-uri postgresql://...`. A custom image ensures all dependencies are pre-installed, avoiding runtime errors like `CrashLoopBackOff`.
 
 #### **Prerequisites**
@@ -39,7 +39,7 @@
 - Create a `Dockerfile` in your directory:
   ```Dockerfile
   # Use the official MLflow image as the base
-  FROM ghcr.io/mlflow/mlflow:v2.20.3
+  FROM ghcr.io/mlflow/mlflow:v3.14.0
 
   # Install system dependencies for psycopg2
   RUN apt-get update && apt-get install -y \
@@ -54,7 +54,7 @@
   CMD ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]
   ```
 - **Explanation**:
-  - **Base Image**: Starts with `ghcr.io/mlflow/mlflow:v2.20.3` (matches your current setup).
+  - **Base Image**: Starts with `ghcr.io/mlflow/mlflow:v3.14.0` (matches your current setup).
   - **Dependencies**:
     - `libpq-dev`: PostgreSQL client library needed for `psycopg2`.
     - `gcc`: Compiler for installing dependencies (cleaned up afterward).
@@ -65,9 +65,9 @@
 #### **Step 3: Build the Custom Image**
 - **Build Locally**:
   ```bash
-  docker build -t mlflow-with-psycopg2:v2.20.3 .
+  docker build -t mlflow-with-psycopg2:v3.14.0 .
   ```
-  - `-t`: Tags the image as `mlflow-with-psycopg2:v2.20.3`.
+  - `-t`: Tags the image as `mlflow-with-psycopg2:v3.14.0`.
   - `.`: Uses the `Dockerfile` in the current directory.
 - **Verify Build**:
   ```bash
@@ -76,13 +76,13 @@
   - Expected:
     ```
     REPOSITORY              TAG       IMAGE ID       CREATED         SIZE
-    mlflow-with-psycopg2    v2.20.3   abc123def456   2 minutes ago   1.2GB
+    mlflow-with-psycopg2    v3.14.0   abc123def456   2 minutes ago   1.2GB
     ```
 
 - **Test Locally (Optional)**:
   - Run the image to ensure `psycopg2` is installed:
     ```bash
-    docker run -it mlflow-with-psycopg2:v2.20.3 bash
+    docker run -it mlflow-with-psycopg2:v3.14.0 bash
     python -c "import psycopg2; print(psycopg2.__version__)"
     ```
     - Expected: `2.9.9 (dt dec pq3 ext lo64)`.
@@ -94,7 +94,7 @@
   - Example uses Docker Hub; adjust for your registry.
 - **Tag the Image**:
   ```bash
-  docker tag mlflow-with-psycopg2:v2.20.3 <your-username>/mlflow-with-psycopg2:v2.20.3
+  docker tag mlflow-with-psycopg2:v3.14.0 <your-username>/mlflow-with-psycopg2:v3.14.0
   ```
   - Replace `<your-username>` (e.g., `jahangir678`).
 - **Log In to Registry**:
@@ -104,7 +104,7 @@
   - Enter your username and password (or token for GHCR).
 - **Push the Image**:
   ```bash
-  docker push <your-username>/mlflow-with-psycopg2:v2.20.3
+  docker push <your-username>/mlflow-with-psycopg2:v3.14.0
   ```
 - **Verify**:
   - Check your registry (e.g., hub.docker.com) to confirm the image is uploaded.
@@ -138,7 +138,7 @@
       spec:
         containers:
         - name: mlflow
-          image: <your-username>/mlflow-with-psycopg2:v2.20.3  # Replace with your registry path
+          image: <your-username>/mlflow-with-psycopg2:v3.14.0  # Replace with your registry path
           imagePullPolicy: Always  # Ensures latest image is pulled
           command: ["mlflow", "server"]
           args:
@@ -214,7 +214,7 @@
 
 ### **Key Considerations**
 - **Registry**: Replace `<your-username>` with your actual registry username (e.g., `jahangir678` for Docker Hub).
-- **Versioning**: Use `v2.20.3` to match your base image; update as needed for future MLflow versions.
+- **Versioning**: Use `v3.14.0` to match your base image; update as needed for future MLflow versions.
 - **Build Optimization**:
   - `psycopg2-binary` avoids compiling from source; if you need a specific version, use `psycopg2` and keep `gcc`.
   - Multi-stage builds could further reduce size (advanced option).
@@ -226,7 +226,7 @@
 - **Build Fails**:
   - Check Docker logs:
     ```bash
-    docker build -t mlflow-with-psycopg2:v2.20.3 . --no-cache
+    docker build -t mlflow-with-psycopg2:v3.14.0 . --no-cache
     ```
   - Ensure internet access for `apt-get` and `pip`.
 - **Pod Still Crashes**:
@@ -238,7 +238,7 @@
 - **Image Pull Errors**:
   - Ensure the registry path is correct and accessible:
     ```bash
-    docker pull <your-username>/mlflow-with-psycopg2:v2.20.3
+    docker pull <your-username>/mlflow-with-psycopg2:v3.14.0
     ```
 
 ---
