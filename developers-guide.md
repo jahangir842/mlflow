@@ -21,10 +21,12 @@ The server is reached by the name `mlflow.local`. Add one line to your machine's
 grep -q "mlflow.local" /etc/hosts || echo "192.168.3.86  mlflow.local" | sudo tee -a /etc/hosts
 ```
 
-**Windows** (open PowerShell/Notepad **as Administrator**):
-```
-Add the line to  C:\Windows\System32\drivers\etc\hosts :
-192.168.3.86  mlflow.local
+**Windows** — run in **PowerShell as Administrator** (safe to re-run):
+```powershell
+$f = "$env:windir\System32\drivers\etc\hosts"
+if (-not (Select-String -Path $f -Pattern "mlflow.local" -Quiet)) {
+    Add-Content -Path $f -Value "192.168.3.86  mlflow.local"
+}
 ```
 
 Verify: `ping mlflow.local` should reply from `192.168.3.86`.
