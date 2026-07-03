@@ -93,6 +93,9 @@ services:
       # Bootstrap admin for basic-auth (only used on first startup)
       MLFLOW_ADMIN_USERNAME: ${MLFLOW_ADMIN_USERNAME}
       MLFLOW_ADMIN_PASSWORD: ${MLFLOW_ADMIN_PASSWORD}
+      # Stable secret key for basic-auth CSRF protection. Must stay constant
+      # across restarts (and identical across replicas if you scale out).
+      MLFLOW_FLASK_SERVER_SECRET_KEY: ${MLFLOW_FLASK_SERVER_SECRET_KEY}
     volumes:
       # Holds the basic-auth user database (sqlite) so accounts survive restarts.
       - mlflow_auth:/mlflow/auth
