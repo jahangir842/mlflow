@@ -11,13 +11,16 @@ it.
 ## 1. Set up (once)
 
 ```bash
-pip install mlflow
+pip install 'mlflow>=3'          # match the server (currently 3.14.x)
 
 # Tell MLflow where the server is
 export MLFLOW_TRACKING_URI="http://mlflow.local"
 ```
 
 Put that `export` in your `~/.bashrc` / `~/.zshrc` so it's always set.
+
+> Use a **MLflow 3.x** client to match the server. A 2.x client mostly works but
+> can hit API mismatches.
 
 > **If the server requires a login**, also set:
 > ```bash
