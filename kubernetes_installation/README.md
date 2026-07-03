@@ -16,10 +16,10 @@ an NFS server for persistent storage of PostgreSQL data and MLflow artifacts.
 - A Kubernetes cluster and `kubectl`.
 - The MLflow image `jahangir842/mlflow-with-psycopg2:v2.20.3` (or your own build
   of the repo `Dockerfile`) reachable from the cluster.
-- An NFS server exporting `/mnt/postgres` and `/mnt/mlflow`. See
-  [../Install_NFS_Server_for_mlflow _and _postgres.md](../Install_NFS_Server_for_mlflow%20_and%20_postgres.md).
-  Update the `server:` IP in `postgres-pv-pvc.yaml` and `mlflow-pv-pvc.yaml` to
-  match your NFS host.
+- An NFS server exporting `/mnt/postgres` and `/mnt/mlflow` (used by the PVs).
+  `/mnt/postgres` must be owned by UID/GID `999` with `700` perms (the container's
+  `postgres` user). Update the `server:` IP in `postgres-pv-pvc.yaml` and
+  `mlflow-pv-pvc.yaml` to match your NFS host.
 
 ## Deploy
 
