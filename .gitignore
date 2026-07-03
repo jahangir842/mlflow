@@ -1,18 +1,17 @@
-# --- Secrets: never commit real credentials ---
+# --- Secrets: never commit real credentials (match anywhere in the tree) ---
 **/.env
-docker_compose_installation/.env
-linux_installation/credentials.txt
-kubernetes_installation/secret.yaml
+**/credentials.txt
+**/secret.yaml
 
 # --- Python / virtualenvs ---
-linux_installation/.mlflow
+**/.mlflow
 **/.venv
 **/venv
 __pycache__/
 *.pyc
 
 # --- MLflow local runs / artifacts ---
-linux_installation/artifacts
+**/artifacts/
 **/mlruns/
 mlartifacts/
 

@@ -46,7 +46,7 @@ ansible-playbook -i inventory.yml ./playbooks/clone_mlflow.yml
 Create a copy of the example environment file and rename it:
 
 ```bash
-cp ./docker_compose_installation/.env.example ./docker_compose_installation/.env
+cp ../docker_compose_installation/.env.example ../docker_compose_installation/.env
 ```
 
 Edit the `.env` file to input your environment-specific credentials and configurations.

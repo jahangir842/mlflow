@@ -37,7 +37,7 @@ is what makes it work for remote developers on any network, unlike the older
 ### 1. Configure secrets
 
 ```bash
-cd docker_compose_installation
+cd installation/docker_compose_installation
 cp .env.example .env
 # Edit .env and change EVERY password.
 ```

@@ -4,7 +4,7 @@
   become: true
   vars:
     mlflow_dir: "/home/adminit/mlflow"
-    compose_dir: "{{ mlflow_dir }}/docker_compose_installation"
+    compose_dir: "{{ mlflow_dir }}/installation/docker_compose_installation"
 
   tasks:
     - name: Ensure .env exists (must be created from .env.example first)
