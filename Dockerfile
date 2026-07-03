@@ -3,6 +3,7 @@ FROM ghcr.io/mlflow/mlflow:v2.20.3
 # Install system + Python dependencies:
 #   - psycopg2-binary : PostgreSQL backend store driver
 #   - boto3           : S3/MinIO artifact store driver (needed for --serve-artifacts)
+#   - mlflow[auth]    : basic-auth extras (Flask-WTF etc.) for --app-name basic-auth
 #   - curl            : used by the container healthcheck
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq-dev \
@@ -11,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && pip install --no-cache-dir \
         psycopg2-binary==2.9.9 \
         boto3==1.35.99 \
+        'mlflow[auth]==2.20.3' \
     && apt-get remove -y gcc \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
