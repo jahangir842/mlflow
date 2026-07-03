@@ -1,0 +1,18 @@
+# Reverse proxy for the MLflow tracking server.
+#
+# Listens on port 80 for ANY hostname, so developers reach MLflow with no port:
+#   http://<your-hostname>     (once DNS / /etc/hosts points the name to this host)
+#   http://<server-ip>         (also works)
+#
+# Plain HTTP (no TLS) per deployment choice -- only safe on a trusted LAN, since
+# basic-auth credentials are sent unencrypted. To add HTTPS later, replace the
+# ":80" site with your domain name and remove "auto_https off".
+
+{
+	admin off
+	auto_https off
+}
+
+:80 {
+	reverse_proxy mlflow:5000
+}

@@ -23,9 +23,9 @@ model registry, and troubleshooting.
 ## Architecture (recommended Compose stack)
 
 ```
-  developers ──► MLflow server :5000 ──► PostgreSQL   (runs, params, metrics, registry)
-   (client)     (auth + proxied         └► MinIO / S3 (artifacts: models, plots, files)
-                 artifact serving)
+  developers ──► Caddy :80 ──► MLflow server ──► PostgreSQL   (runs, params, metrics, registry)
+   (client)     (reverse       (auth + proxied   └► MinIO / S3 (artifacts: models, plots, files)
+                 proxy)         artifact serving)
 ```
 
 The tracking server proxies artifacts, so **remote developers only need the
@@ -40,7 +40,8 @@ cp .env.example .env          # then edit and change EVERY password
 docker compose up -d --build
 ```
 
-Open `http://<server-ip>:5000` and log in with the admin credentials from `.env`.
+Open `http://<server-ip>` (the Caddy proxy serves on port 80 — no `:5000`) and
+log in with the admin credentials from `.env`.
 Full walkthrough, client setup, user management, and backups:
 **[docker_compose_installation/README.md](docker_compose_installation/README.md)**.
 

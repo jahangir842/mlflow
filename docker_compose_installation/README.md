@@ -6,19 +6,21 @@ developers. This is the **recommended** deployment path in this repo.
 ## Architecture
 
 ```
-                         ┌───────────────────────────┐
-  developer laptop  ───► │  mlflow server  :5000      │
-  (mlflow client)        │  - basic auth (user/pass)  │
-                         │  - proxied artifact serving│
-                         └────────┬───────────┬───────┘
-                                  │           │
-                     backend store│           │artifact store
-                                  ▼           ▼
-                          ┌────────────┐  ┌────────────┐
-                          │ PostgreSQL │  │   MinIO    │
-                          │ (metadata) │  │ (S3 bucket)│
-                          └────────────┘  └────────────┘
+                     ┌─────────┐     ┌───────────────────────────┐
+  developer laptop ─►│  Caddy  │ ──► │  mlflow server  :5000      │
+  (mlflow client)    │  :80    │     │  - basic auth (user/pass)  │
+                     └─────────┘     │  - proxied artifact serving│
+                                     └────────┬───────────┬───────┘
+                                  backend store│           │artifact store
+                                              ▼           ▼
+                                      ┌────────────┐  ┌────────────┐
+                                      │ PostgreSQL │  │   MinIO    │
+                                      │ (metadata) │  │ (S3 bucket)│
+                                      └────────────┘  └────────────┘
 ```
+
+A Caddy reverse proxy publishes MLflow on port **80**, so clients use
+`http://<host>` with no `:5000`. MLflow itself is not published to the host.
 
 **Why this design:** With proxied artifact serving (`--serve-artifacts`),
 clients talk **only** to the MLflow server. They do not need NFS mounts or S3
@@ -53,7 +55,7 @@ docker compose logs -f mlflow
 
 ### 3. Verify
 
-- **MLflow UI**: http://<server-ip>:5000 — you'll be prompted for the admin
+- **MLflow UI**: http://<server-ip> — you'll be prompted for the admin
   username/password from `.env`.
 - **MinIO console**: http://<server-ip>:9001 — log in with `MINIO_ROOT_USER` /
   `MINIO_ROOT_PASSWORD`; you should see the `mlflow` bucket.
@@ -66,7 +68,7 @@ environment variables — never hardcode them in scripts.
 ```bash
 pip install mlflow
 
-export MLFLOW_TRACKING_URI="http://<server-ip>:5000"
+export MLFLOW_TRACKING_URI="http://<server-ip>"
 export MLFLOW_TRACKING_USERNAME="your-username"
 export MLFLOW_TRACKING_PASSWORD="your-password"
 ```
@@ -87,7 +89,7 @@ The bootstrap admin (from `.env`) can create per-developer accounts. See the
 MLflow auth REST API, e.g. create a user:
 
 ```bash
-curl -u admin:admin-password -X POST http://<server-ip>:5000/api/2.0/mlflow/users/create \
+curl -u admin:admin-password -X POST http://<server-ip>/api/2.0/mlflow/users/create \
   -H "Content-Type: application/json" \
   -d '{"username": "alice", "password": "alice-password"}'
 ```
@@ -120,8 +122,10 @@ Two things to back up:
 ## Security notes
 
 - All credentials come from `.env` (git-ignored). No secrets in the repo.
-- Basic-auth protects the API/UI. For internet exposure, additionally put the
-  server behind a TLS reverse proxy (Nginx/Caddy/Traefik) so credentials aren't
-  sent in clear text. See `../linux_installation/authentication_for_mlflow.md`.
-- Postgres is not published to the host (internal network only). MinIO ports
-  9000/9001 are published for convenience — restrict them in production.
+- Basic-auth protects the API/UI, and access is via the Caddy proxy on port 80.
+  **This is plain HTTP — credentials are not encrypted in transit**, so only run
+  it on a trusted LAN. For untrusted networks, enable TLS in the `Caddyfile`
+  (swap the `:80` site for your domain and remove `auto_https off`; Caddy then
+  provisions a certificate automatically).
+- Postgres and MLflow are not published to the host (internal network only).
+  MinIO ports 9000/9001 are published for convenience — restrict them in production.

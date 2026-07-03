@@ -25,7 +25,7 @@ storage for you.
 
 | | |
 |---|---|
-| **Tracking URL** | `http://192.168.3.86:5000` |
+| **Tracking URL** | `http://mlflow.local` |
 | **Web UI** | open that URL in a browser |
 | **Auth** | username + password (per developer) |
 
@@ -33,13 +33,27 @@ Ask an admin to create your account. Admins create one with:
 
 ```bash
 curl -u admin:<admin-password> -X POST \
-  http://192.168.3.86:5000/api/2.0/mlflow/users/create \
+  http://mlflow.local/api/2.0/mlflow/users/create \
   -H "Content-Type: application/json" \
   -d '{"username": "yourname", "password": "your-password"}'
 ```
 
-> If you can't reach the URL at all, you're likely off the network / VPN, or the
-> firewall port isn't open — ping an admin.
+> If you can't reach the URL at all, you're likely off the network / VPN, the
+> hostname isn't resolving (see below), or the firewall port isn't open — ping an admin.
+
+### Making `mlflow.local` resolve
+
+The server listens on standard port 80, so no `:5000` is needed — but your
+machine has to know that `mlflow.local` means `192.168.3.86`. Either:
+
+- **Company DNS (preferred)** — ask IT to add an `A` record
+  `mlflow.local → 192.168.3.86` (or whatever hostname your team standardizes on),
+  so it works for everyone automatically, **or**
+- **Per-machine hosts file** — add one line yourself:
+  - Linux/macOS: `echo "192.168.3.86  mlflow.local" | sudo tee -a /etc/hosts`
+  - Windows: add `192.168.3.86  mlflow.local` to `C:\Windows\System32\drivers\etc\hosts` (as Administrator)
+
+You can always fall back to the raw IP with no port: `http://192.168.3.86`.
 
 ---
 
@@ -53,7 +67,7 @@ Point the client at the server and provide your credentials via **environment
 variables** — never hardcode credentials in code:
 
 ```bash
-export MLFLOW_TRACKING_URI="http://192.168.3.86:5000"
+export MLFLOW_TRACKING_URI="http://mlflow.local"
 export MLFLOW_TRACKING_USERNAME="yourname"
 export MLFLOW_TRACKING_PASSWORD="your-password"
 ```

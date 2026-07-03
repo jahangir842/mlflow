@@ -78,8 +78,10 @@ services:
         condition: service_healthy
       minio-setup:
         condition: service_completed_successfully
-    ports:
-      - "5000:5000"
+    # Not published to the host -- reached only via the caddy reverse proxy on
+    # port 80. (Add a "ports: [5000:5000]" back if you want direct access too.)
+    expose:
+      - "5000"
     environment:
       # Backend store (Postgres)
       POSTGRES_USER: ${POSTGRES_USER}
@@ -130,7 +132,23 @@ services:
       retries: 5
       start_period: 40s
 
+  # Reverse proxy so developers reach MLflow on port 80 (no :5000 in the URL).
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
 volumes:
   postgres_data:
   minio_data:
   mlflow_auth:
+  caddy_data:
+  caddy_config:
