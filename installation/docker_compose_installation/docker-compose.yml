@@ -92,6 +92,12 @@ services:
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
       MLFLOW_BUCKET_NAME: ${MLFLOW_BUCKET_NAME}
+      # MLflow 3.x DNS-rebinding protection: Host headers the server will accept.
+      # Default covers the healthcheck, the internal service name, the reverse-proxy
+      # hostname (mlflow.local), and private LAN ranges. Override MLFLOW_ALLOWED_HOSTS
+      # in .env to add your hostname/domain, or set it to "*" to disable the check
+      # (trusted networks only).
+      MLFLOW_SERVER_ALLOWED_HOSTS: ${MLFLOW_ALLOWED_HOSTS:-localhost,localhost:5000,127.0.0.1,mlflow,mlflow:5000,mlflow.local,192.168.*,10.*}
       # Toggle basic-auth on/off. "true" (default) = login required;
       # "false" = open server, no authentication.
       MLFLOW_AUTH_ENABLED: ${MLFLOW_AUTH_ENABLED:-true}
