@@ -8,7 +8,7 @@ store** (artifacts), with per-user **authentication**.
 ## Using MLflow (developers)
 
 If the server is already running and you just want to log experiments, see the
-**[Developers Guide](DEVELOPERS.md)** — client setup, logging runs/models, the
+**[Developers Guide](developers-guide.md)** — client setup, logging runs/models, the
 model registry, and troubleshooting.
 
 ## Deployment options
