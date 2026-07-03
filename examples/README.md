@@ -7,6 +7,7 @@ templates for your own logging. Neither downloads any data.
 |--------|------|------------|------------|
 | `train_example.py` | Classification (Iris, RandomForest) | `example-iris` | params, metrics, confusion-matrix plot, model |
 | `train_regression_example.py` | Regression (Diabetes, GradientBoosting) | `example-diabetes-regression` | different params, a **metric curve** over iterations, 3 plots, a CSV, model |
+| `trace_example.py` | Tracing (simulated RAG, no API key) | `example-traces` | nested **spans** with inputs/outputs, timing, and attributes — shown in the **Traces** tab |
 
 ## Run them
 
@@ -21,7 +22,14 @@ export MLFLOW_TRACKING_URI=http://mlflow.local     # or http://<server-ip>
 
 python train_example.py                 # classification
 python train_regression_example.py      # regression
+python trace_example.py                 # traces (observability / GenAI-style)
 ```
+
+> **Runs vs Traces:** a *run* records a training job's params/metrics/artifacts;
+> a *trace* records the step-by-step execution of a call as nested spans (inputs,
+> outputs, timing) — used to observe/debug LLM apps, RAG, and agents. Real LLM
+> apps usually get traces automatically via `mlflow.openai.autolog()`,
+> `mlflow.langchain.autolog()`, `mlflow.anthropic.autolog()`, etc.
 
 Each script prints its run URL. Open the tracking UI and find the experiment to
 see the params, metrics, plots/CSV artifacts, and the logged model.
