@@ -1,10 +1,14 @@
-# Example experiment
+# Example experiments
 
-A small, self-contained MLflow run you can use to **smoke-test the server** or as
-a template for your own logging. It trains a RandomForest on the built-in Iris
-dataset (no data to download) and logs parameters, metrics, a plot, and the model.
+Small, self-contained MLflow runs you can use to **smoke-test the server** or as
+templates for your own logging. Neither downloads any data.
 
-## Run it
+| Script | Task | Experiment | Highlights |
+|--------|------|------------|------------|
+| `train_example.py` | Classification (Iris, RandomForest) | `example-iris` | params, metrics, confusion-matrix plot, model |
+| `train_regression_example.py` | Regression (Diabetes, GradientBoosting) | `example-diabetes-regression` | different params, a **metric curve** over iterations, 3 plots, a CSV, model |
+
+## Run them
 
 ```bash
 cd examples
@@ -15,32 +19,36 @@ export MLFLOW_TRACKING_URI=http://mlflow.local     # or http://<server-ip>
 #   export MLFLOW_TRACKING_USERNAME=your-username
 #   export MLFLOW_TRACKING_PASSWORD=your-password
 
-python train_example.py
+python train_example.py                 # classification
+python train_regression_example.py      # regression
 ```
 
-The script prints the run URL. Open the tracking UI and find the **`example-iris`**
-experiment to see the params, metrics, the `confusion_matrix.png` artifact, and
-the logged model.
+Each script prints its run URL. Open the tracking UI and find the experiment to
+see the params, metrics, plots/CSV artifacts, and the logged model.
 
-## What it demonstrates
+## What they demonstrate
 
-| MLflow feature | In the script |
-|----------------|---------------|
-| Experiment grouping | `mlflow.set_experiment("example-iris")` |
+| MLflow feature | How |
+|----------------|-----|
+| Experiment grouping | `mlflow.set_experiment(...)` |
 | Parameters | `mlflow.log_params(...)` |
-| Metrics | `mlflow.log_metric("accuracy", ...)` |
-| Tags | `mlflow.set_tag("example", "true")` |
-| File artifacts | `mlflow.log_artifact("confusion_matrix.png")` |
+| Metrics | `mlflow.log_metric("rmse", ...)` |
+| Metric curve (per step) | `mlflow.log_metric("val_rmse", v, step=i)` |
+| Tags | `mlflow.set_tag("task", "regression")` |
+| File artifacts (plots, CSV) | `mlflow.log_artifact(f, artifact_path="outputs")` |
 | Model logging | `mlflow.sklearn.log_model(...)` (streamed to MinIO via the server) |
 
 ## Clean up (optional)
 
-Delete the example experiment from the UI, or via the API:
+Delete an example experiment from the UI, or via the API:
 
 ```python
 import mlflow
 c = mlflow.MlflowClient()
-c.delete_experiment(c.get_experiment_by_name("example-iris").experiment_id)
+for name in ("example-iris", "example-diabetes-regression"):
+    e = c.get_experiment_by_name(name)
+    if e:
+        c.delete_experiment(e.experiment_id)
 ```
 
 See the [Developers Guide](../developers-guide.md) for the full walkthrough.

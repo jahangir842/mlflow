@@ -39,7 +39,7 @@ mlflow.set_tracking_uri(TRACKING_URI)
 print(f"Logging to: {TRACKING_URI}")
 
 # Group runs under a named experiment (created automatically if new).
-mlflow.set_experiment("example-iris")
+mlflow.set_experiment("example-iris - 2")
 
 # Data
 X, y = load_iris(return_X_y=True)

@@ -1,3 +1,4 @@
 mlflow>=3
 scikit-learn
 matplotlib
+pandas
