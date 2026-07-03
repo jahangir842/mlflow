@@ -11,7 +11,28 @@ it.
 
 ---
 
-## 1. Set up (once)
+## 1. Make `mlflow.local` resolve (one-time)
+
+The server is reached by the name `mlflow.local`. Add one line to your machine's
+**hosts file** so the name points to the server (`192.168.3.86`):
+
+**Linux / macOS:**
+```bash
+echo "192.168.3.86  mlflow.local" | sudo tee -a /etc/hosts
+```
+
+**Windows** (open PowerShell/Notepad **as Administrator**):
+```
+Add the line to  C:\Windows\System32\drivers\etc\hosts :
+192.168.3.86  mlflow.local
+```
+
+Verify: `ping mlflow.local` should reply from `192.168.3.86`.
+
+> Prefer not to edit hosts? You can always use the IP directly:
+> `http://192.168.3.86` (no port).
+
+## 2. Set up the client (once)
 
 ```bash
 pip install 'mlflow>=3'          # match the server (currently 3.14.x)
@@ -39,7 +60,7 @@ python -c "import mlflow; print(mlflow.search_experiments())"
 
 ---
 
-## 2. Log a run
+## 3. Log a run
 
 ```python
 import mlflow
@@ -56,7 +77,7 @@ Open **`http://mlflow.local`** in your browser to see it.
 
 ---
 
-## 3. Easiest: autolog
+## 4. Easiest: autolog
 
 One line captures params, metrics, and the model automatically for common
 libraries (scikit-learn, XGBoost, PyTorch, Keras, …):
@@ -71,14 +92,14 @@ with mlflow.start_run():
 
 ---
 
-## 4. Save and load a model
+## 5. Save and load a model
 
 ```python
 import mlflow.sklearn
 
 with mlflow.start_run():
     model.fit(X_train, y_train)
-    mlflow.sklearn.log_model(model, "model")
+    mlflow.sklearn.log_model(model, name="model")
 ```
 
 Load it back later (anywhere, once your `MLFLOW_TRACKING_URI` is set):
@@ -93,7 +114,7 @@ model.predict(X_new)
 
 ---
 
-## 5. Tips
+## 6. Tips
 
 - **Name your experiments and runs** so they're easy to find.
 - **Tag** runs with useful metadata: `mlflow.set_tag("dataset", "v2")`.

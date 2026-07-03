@@ -37,6 +37,21 @@ log in with the admin credentials from `.env`. Full walkthrough, client setup,
 user management, and backups:
 **[docker_compose_installation/README.md](docker_compose_installation/README.md)**.
 
+### Hostname (`mlflow.local`)
+
+Developers reach the server by name (`mlflow.local`). Make it resolve to the
+server's IP one of these ways:
+
+- **Per machine** — add `<server-ip>  mlflow.local` to each client's hosts file
+  (`/etc/hosts`, or `C:\Windows\System32\drivers\etc\hosts`). Steps are in the
+  [Developers Guide](../developers-guide.md).
+- **Central DNS** — add an `A` record on your LAN DNS (router / Pi-hole /
+  dnsmasq). Use a **non-`.local`** name (e.g. `mlflow.lan`) since `.local` is
+  reserved for mDNS and won't resolve reliably via unicast DNS. If you change the
+  name, add it to `MLFLOW_ALLOWED_HOSTS` in `.env`.
+
+Clients can always use the raw IP (`http://<server-ip>`) with no hostname setup.
+
 ## Images
 
 - **Base**: [ghcr.io/mlflow/mlflow](https://github.com/mlflow/mlflow/pkgs/container/mlflow)
