@@ -5,6 +5,12 @@ developers can log experiments, register models, and share artifacts from any
 machine. Backed by **PostgreSQL** (metadata) and an **S3-compatible object
 store** (artifacts), with per-user **authentication**.
 
+## Using MLflow (developers)
+
+If the server is already running and you just want to log experiments, see the
+**[Developers Guide](DEVELOPERS.md)** — client setup, logging runs/models, the
+model registry, and troubleshooting.
+
 ## Deployment options
 
 | Method | When to use | Guide |
