@@ -1,3 +1,25 @@
-linux_installation/.mlflow
-linux_installation/artifacts
+# --- Secrets: never commit real credentials ---
+**/.env
 docker_compose_installation/.env
+linux_installation/credentials.txt
+kubernetes_installation/secret.yaml
+
+# --- Python / virtualenvs ---
+linux_installation/.mlflow
+**/.venv
+**/venv
+__pycache__/
+*.pyc
+
+# --- MLflow local runs / artifacts ---
+linux_installation/artifacts
+**/mlruns/
+mlartifacts/
+
+# --- Database / artifact dumps (back these up out-of-band, not in git) ---
+*.dump
+*.sql
+
+# --- Example datasets & caches (large binaries, keep out of the repo) ---
+examples/yolo8/yolo8/
+*.cache

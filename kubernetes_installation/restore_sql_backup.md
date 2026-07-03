@@ -57,7 +57,7 @@ To avoid conflicts, drop and recreate the `mlflowdb` database after terminating 
    ```bash
    psql -U admin -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'mlflowdb';"
    ```
-   - Enter `pakistan` as the password when prompted.
+   - Enter `CHANGE_ME_password` as the password when prompted.
    - This ensures no sessions block the drop operation. You might see output like a count of terminated connections or no output if there were none.
 
 3. **Drop the Existing Database**:
@@ -84,7 +84,7 @@ Your `backup_mlflow.dump` is a custom-format dump, so use `pg_restore` to restor
    pg_restore -U admin -d mlflowdb --verbose /tmp/backup_mlflow.dump
    ```
    - `--verbose`: Provides detailed output to confirm the restore process.
-   - Enter `pakistan` as the password when prompted.
+   - Enter `CHANGE_ME_password` as the password when prompted.
    - With a fresh database, this should restore the schema and data without conflicts.
 
 2. **Verify the Restore**:
@@ -124,7 +124,7 @@ kubectl rollout restart deployment/mlflow -n mlflow
 To avoid entering the password repeatedly:
 1. Inside the pod, set the environment variable:
    ```bash
-   export PGPASSWORD=pakistan
+   export PGPASSWORD=CHANGE_ME_password
    ```
 2. Then run the commands without password prompts:
    ```bash
@@ -158,7 +158,7 @@ To avoid entering the password repeatedly:
      ```bash
      kubectl logs -f deployment/mlflow -n mlflow
      ```
-   - Ensure the `--backend-store-uri` is correct (`postgresql://admin:pakistan@postgres:5432/mlflowdb`).
+   - Ensure the `--backend-store-uri` is correct (`postgresql://admin:CHANGE_ME_password@postgres:5432/mlflowdb`).
 
 4. **File Format Confusion**:
    - If `pg_restore` fails with an unexpected error, double-check the file:

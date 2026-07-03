@@ -45,7 +45,7 @@ sudo systemctl enable postgresql
 # Create database and user
 sudo -u postgres psql <<EOF
 CREATE DATABASE mlflowdb;
-CREATE USER admin WITH PASSWORD 'pakistan';
+CREATE USER admin WITH PASSWORD 'CHANGE_ME_password';
 ALTER ROLE admin SET client_encoding TO 'utf8';
 ALTER ROLE admin SET default_transaction_isolation TO 'read committed';
 ALTER ROLE admin SET timezone TO 'UTC';
@@ -95,8 +95,9 @@ Group=$USER
 WorkingDirectory=/home/jahangir/projects/mlflow
 ExecStart=/bin/bash -c "source .mlflow/bin/activate && \
           mlflow server \
-          --backend-store-uri postgresql://admin:pakistan@localhost/mlflowdb \
-          --default-artifact-root file:///mlflow/artifacts \
+          --backend-store-uri postgresql://admin:CHANGE_ME_password@localhost/mlflowdb \
+          --artifacts-destination file:///mlflow/artifacts \
+          --serve-artifacts \
           --host 0.0.0.0 \
           --port 5000"
 Restart=always

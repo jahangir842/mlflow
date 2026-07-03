@@ -1,134 +1,127 @@
-# MLflow with PostgreSQL Installation Guide
+# MLflow with Docker Compose (PostgreSQL + MinIO + Auth)
 
-This guide helps you set up MLflow with PostgreSQL backend using Docker Compose.
+Production-style, self-hosted MLflow tracking server for a team of remote
+developers. This is the **recommended** deployment path in this repo.
 
----
+## Architecture
 
-**Official MLflow with Docker**: https://github.com/mlflow/mlflow/pkgs/container/mlflow
+```
+                         ┌───────────────────────────┐
+  developer laptop  ───► │  mlflow server  :5000      │
+  (mlflow client)        │  - basic auth (user/pass)  │
+                         │  - proxied artifact serving│
+                         └────────┬───────────┬───────┘
+                                  │           │
+                     backend store│           │artifact store
+                                  ▼           ▼
+                          ┌────────────┐  ┌────────────┐
+                          │ PostgreSQL │  │   MinIO    │
+                          │ (metadata) │  │ (S3 bucket)│
+                          └────────────┘  └────────────┘
+```
 
-**Customised Mlflow Image with Postgres Capability:** https://hub.docker.com/repository/docker/jahangir842/mlflow-with-psycopg2/general
-
----
+**Why this design:** With proxied artifact serving (`--serve-artifacts`),
+clients talk **only** to the MLflow server. They do not need NFS mounts or S3
+credentials — the server streams artifacts to/from MinIO on their behalf. This
+is what makes it work for remote developers on any network, unlike the older
+`file://` + NFS approach.
 
 ## Prerequisites
 
-- Docker installed ([Docker Installation Guide](https://docs.docker.com/get-docker/))
-- Docker Compose installed ([Docker Compose Installation Guide](https://docs.docker.com/compose/install/))
+- Docker Engine + Docker Compose v2 ([install guide](https://docs.docker.com/engine/install/))
 
-## Installation Steps
+## Setup
 
-### 1. Build the Custom MLflow Image
+### 1. Configure secrets
 
 ```bash
-# Clone this repository (if you haven't already)
-git clone <your-repository-url>
 cd docker_compose_installation
-
-# Build the custom MLflow image
-docker build -t mlflow-with-psycopg2:v2.20.3 -f ../Dockerfile ..
+cp .env.example .env
+# Edit .env and change EVERY password.
 ```
 
-### 1. Credentials
-
-put the .env file in .gitignore file and change the credentials
-
-
-### 2. Start the Services
+### 2. Build and start
 
 ```bash
-# Start PostgreSQL and MLflow
-docker-compose up -d
+# Builds the custom MLflow image (adds psycopg2 + boto3) and starts everything
+docker compose up -d --build
 
-# Check if containers are running
-docker-compose ps
+# Watch startup (postgres + minio become healthy, bucket is created, then mlflow starts)
+docker compose ps
+docker compose logs -f mlflow
 ```
 
-### 3. Verify Installation
+### 3. Verify
 
-1. Access MLflow UI:
-   - Open your browser and go to: http://localhost:5000
-   - You should see the MLflow interface
+- **MLflow UI**: http://<server-ip>:5000 — you'll be prompted for the admin
+  username/password from `.env`.
+- **MinIO console**: http://<server-ip>:9001 — log in with `MINIO_ROOT_USER` /
+  `MINIO_ROOT_PASSWORD`; you should see the `mlflow` bucket.
 
-2. Test with Python:
+## Client usage (developers)
+
+Each developer installs the client and points at the server. Credentials go in
+environment variables — never hardcode them in scripts.
+
+```bash
+pip install mlflow
+
+export MLFLOW_TRACKING_URI="http://<server-ip>:5000"
+export MLFLOW_TRACKING_USERNAME="your-username"
+export MLFLOW_TRACKING_PASSWORD="your-password"
+```
+
 ```python
 import mlflow
 
-# Set the tracking URI
-mlflow.set_tracking_uri("http://localhost:5000")
-
-# Start a new run
+mlflow.set_experiment("demo")
 with mlflow.start_run():
-    # Log a parameter
-    mlflow.log_param("test_param", 1)
-    # Log a metric
-    mlflow.log_metric("test_metric", 100)
+    mlflow.log_param("lr", 0.001)
+    mlflow.log_metric("accuracy", 0.92)
+    mlflow.log_artifact("model.pkl")   # streamed to MinIO via the server
 ```
 
-## Configuration
+## Managing users
 
-Default credentials (can be changed in docker-compose.yml):
-- PostgreSQL User: admin
-- PostgreSQL Password: pakistan
-- Database Name: mlflowdb
-- MLflow URL: http://localhost:5000
-- PostgreSQL Port: 5432
-
-## Common Commands
+The bootstrap admin (from `.env`) can create per-developer accounts. See the
+MLflow auth REST API, e.g. create a user:
 
 ```bash
-# Start services
-docker-compose --env-file .env up -d
-
-# Stop services
-docker-compose --env-file .env down
-
-# View logs
-docker-compose logs -f
-
-# Restart services
-docker-compose restart
-
-# Stop and remove everything (including volumes)
-docker-compose down -v
+curl -u admin:admin-password -X POST http://<server-ip>:5000/api/2.0/mlflow/users/create \
+  -H "Content-Type: application/json" \
+  -d '{"username": "alice", "password": "alice-password"}'
 ```
 
-## Troubleshooting
+Permissions default to `READ` for new users (`default_permission` in the
+generated `basic_auth.ini`); grant per-experiment permissions as needed. See the
+[MLflow authentication docs](https://mlflow.org/docs/latest/auth/index.html).
 
-1. If PostgreSQL port 5432 is already in use:
-   - Change the port mapping in docker-compose.yml from "5432:5432" to "5433:5432"
+## Common commands
 
-2. If MLflow container fails to start:
-   ```bash
-   # Check MLflow logs
-   docker-compose logs mlflow
-   ```
-
-3. If PostgreSQL connection fails:
-   ```bash
-   # Check PostgreSQL logs
-   docker-compose logs postgres
-   ```
-
-## Data Persistence
-
-- PostgreSQL data is stored in the `postgres_data` volume
-- MLflow artifacts are stored in the `mlflow_artifacts` volume
-
-These volumes persist even after containers are stopped. To remove them, use:
 ```bash
-docker-compose down -v
+docker compose up -d --build        # start / rebuild
+docker compose ps                   # status + health
+docker compose logs -f mlflow       # tail server logs
+docker compose down                 # stop (keeps data volumes)
+docker compose down -v              # stop AND delete all data (danger!)
 ```
 
-## Security Note
+## Backups
 
-The default credentials in this setup are for demonstration purposes. For production:
-1. Change the default passwords
-2. Use environment variables or Docker secrets
-3. Enable SSL/TLS
-4. Configure proper network security
+Two things to back up:
 
-## Additional Resources
+1. **PostgreSQL** (all run metadata + model registry):
+   ```bash
+   docker compose exec postgres pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > mlflow_pg_backup.sql
+   ```
+2. **MinIO bucket** (artifacts): mirror it out with `mc`, or snapshot the
+   `minio_data` volume.
 
-- [MLflow Documentation](https://www.mlflow.org/docs/latest/index.html)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [Docker Documentation](https://docs.docker.com/)
+## Security notes
+
+- All credentials come from `.env` (git-ignored). No secrets in the repo.
+- Basic-auth protects the API/UI. For internet exposure, additionally put the
+  server behind a TLS reverse proxy (Nginx/Caddy/Traefik) so credentials aren't
+  sent in clear text. See `../linux_installation/authentication_for_mlflow.md`.
+- Postgres is not published to the host (internal network only). MinIO ports
+  9000/9001 are published for convenience — restrict them in production.

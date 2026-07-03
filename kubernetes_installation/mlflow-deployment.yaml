@@ -25,6 +25,11 @@ spec:
             cpu: "250m"
         ports:
         - containerPort: 5000
+        # Credentials come from the mlflow-secrets Secret; $(VAR) is expanded by
+        # Kubernetes into the args below.
+        envFrom:
+        - secretRef:
+            name: mlflow-secrets
         command:
         - mlflow
         - server
@@ -33,16 +38,24 @@ spec:
         - --port
         - "5000"
         - --backend-store-uri
-        - postgresql://admin:pakistan@postgres:5432/mlflowdb
-        - --default-artifact-root
+        - postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)
+        - --artifacts-destination
         - file:///mlflow/artifacts
-        # readinessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 5000
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        #   timeoutSeconds: 5
+        - --serve-artifacts
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 40
+          periodSeconds: 15
+          timeoutSeconds: 5
         volumeMounts:
         - name: mlflow-artifacts
           mountPath: /mlflow/artifacts

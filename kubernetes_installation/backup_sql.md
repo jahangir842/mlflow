@@ -25,7 +25,7 @@
 2. **Set the Password Environment Variable** (Optional):
    To avoid entering the password repeatedly:
    ```bash
-   export PGPASSWORD=pakistan
+   export PGPASSWORD=CHANGE_ME_password
    ```
 
 3. **Create the Custom-Format Dump**:
@@ -37,7 +37,7 @@
    - `-d mlflowdb`: Specifies the database to dump.
    - `-Fc`: Uses the custom format (binary, restorable with `pg_restore`).
    - `-f /tmp/backup_mlflow.dump`: Saves the dump to `/tmp/backup_mlflow.dump` inside the pod.
-   - If `PGPASSWORD` isn’t set, enter `pakistan` when prompted.
+   - If `PGPASSWORD` isn’t set, enter `CHANGE_ME_password` when prompted.
 
 4. **Verify the Dump File**:
    Check that the file was created:
@@ -83,7 +83,7 @@
 If you prefer a single sequence without entering the pod:
 ```bash
 POSTGRES_POD=$(kubectl get pods -n mlflow -l app=postgres -o jsonpath="{.items[0].metadata.name}")
-kubectl exec $POSTGRES_POD -n mlflow -- bash -c "PGPASSWORD=pakistan pg_dump -U admin -d mlflowdb -Fc -f /tmp/backup_mlflow.dump"
+kubectl exec $POSTGRES_POD -n mlflow -- bash -c "PGPASSWORD=CHANGE_ME_password pg_dump -U admin -d mlflowdb -Fc -f /tmp/backup_mlflow.dump"
 kubectl cp $POSTGRES_POD:/tmp/backup_mlflow.dump ./backup_mlflow.dump -n mlflow
 kubectl exec $POSTGRES_POD -n mlflow -- rm /tmp/backup_mlflow.dump
 ```
@@ -136,7 +136,7 @@ To confirm the dump is valid:
    - Test restoring to a temporary database:
      ```bash
      kubectl exec $POSTGRES_POD -n mlflow -- bash -c "psql -U admin -d postgres -c 'CREATE DATABASE test_mlflowdb;'"
-     kubectl exec $POSTGRES_POD -n mlflow -- bash -c "PGPASSWORD=pakistan pg_restore -U admin -d test_mlflowdb --verbose /tmp/backup_mlflow.dump"
+     kubectl exec $POSTGRES_POD -n mlflow -- bash -c "PGPASSWORD=CHANGE_ME_password pg_restore -U admin -d test_mlflowdb --verbose /tmp/backup_mlflow.dump"
      kubectl exec $POSTGRES_POD -n mlflow -- psql -U admin -d test_mlflowdb -c "\dt"
      ```
 

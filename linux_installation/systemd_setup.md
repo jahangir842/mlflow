@@ -21,8 +21,9 @@ Group=jahangir
 WorkingDirectory=/home/jahangir/projects/mlflow
 ExecStart=/bin/bash -c "source .mlflow/bin/activate && \
           mlflow server \
-          --backend-store-uri postgresql://admin:pakistan@localhost/mlflowdb \
-          --default-artifact-root file:///mlflow/artifacts \
+          --backend-store-uri postgresql://admin:CHANGE_ME_password@localhost/mlflowdb \
+          --artifacts-destination file:///mlflow/artifacts \
+          --serve-artifacts \
           --host 0.0.0.0 \
           --port 5000"
 Restart=always

@@ -18,7 +18,7 @@ Before making changes, back up your existing `mlflowdb` to avoid data loss.
 
 2. **Create a Dump**:
    ```bash
-   kubectl exec $POSTGRES_POD -n mlflow -- bash -c "PGPASSWORD=pakistan pg_dump -U admin -d mlflowdb -Fc -f /tmp/backup_mlflow.dump"
+   kubectl exec $POSTGRES_POD -n mlflow -- bash -c "PGPASSWORD=CHANGE_ME_password pg_dump -U admin -d mlflowdb -Fc -f /tmp/backup_mlflow.dump"
    ```
 
 3. **Copy the Backup Locally**:
@@ -160,7 +160,7 @@ Modify your PostgreSQL Deployment to use the NFS-backed PVC.
            - name: POSTGRES_USER
              value: "admin"
            - name: POSTGRES_PASSWORD
-             value: "pakistan"
+             value: "CHANGE_ME_password"
            - name: POSTGRES_DB
              value: "mlflowdb"
            ports:
@@ -204,7 +204,7 @@ Since the NFS volume is new, restore your MLflow data from the backup.
 
 3. **Set the Password**:
    ```bash
-   export PGPASSWORD=pakistan
+   export PGPASSWORD=CHANGE_ME_password
    ```
 
 4. **Create the Database**:

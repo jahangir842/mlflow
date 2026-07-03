@@ -4,9 +4,26 @@
   become: true
   vars:
     mlflow_dir: "/home/adminit/mlflow"
+    compose_dir: "{{ mlflow_dir }}/docker_compose_installation"
 
   tasks:
-    - name: Ensure docker-compose is up 
+    - name: Ensure .env exists (must be created from .env.example first)
+      ansible.builtin.stat:
+        path: "{{ compose_dir }}/.env"
+      register: env_file
+
+    - name: Fail early if .env is missing
+      ansible.builtin.fail:
+        msg: >-
+          {{ compose_dir }}/.env not found. Copy .env.example to .env on the
+          managed host (or push it via a vault-encrypted template) and set the
+          credentials before running this playbook.
+      when: not env_file.stat.exists
+
+    - name: Build images and start the MLflow stack
+      # Uses the Docker Compose v2 plugin (installed by packages.yml).
       ansible.builtin.command:
-        cmd: docker-compose --env-file .env up -d
-        chdir: "{{ mlflow_dir }}/docker_compose_installation"
+        cmd: docker compose up -d --build
+        chdir: "{{ compose_dir }}"
+      register: compose_up
+      changed_when: "'Started' in compose_up.stderr or 'Created' in compose_up.stderr"

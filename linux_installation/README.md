@@ -16,7 +16,7 @@ pip install mlflow psycopg2-binary
 
 # Setup PostgreSQL and start service
 sudo -u postgres psql -c "CREATE DATABASE mlflowdb;"
-sudo -u postgres psql -c "CREATE USER admin WITH PASSWORD 'pakistan';"
+sudo -u postgres psql -c "CREATE USER admin WITH PASSWORD 'CHANGE_ME_password';"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE mlflowdb TO admin;"
 
 # Create artifacts directory
@@ -37,8 +37,9 @@ See [Complete Installation Guide](complete_installation_guide.md) for:
 ```bash
 # Start MLflow server
 mlflow server \
-  --backend-store-uri postgresql://admin:pakistan@localhost/mlflowdb \
-  --default-artifact-root file:///mlflow/artifacts \
+  --backend-store-uri postgresql://admin:CHANGE_ME_password@localhost/mlflowdb \
+  --artifacts-destination file:///mlflow/artifacts \
+  --serve-artifacts \
   --host 0.0.0.0 \
   --port 5000
 
