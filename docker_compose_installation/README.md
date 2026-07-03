@@ -83,7 +83,44 @@ with mlflow.start_run():
     mlflow.log_artifact("model.pkl")   # streamed to MinIO via the server
 ```
 
+## Enable / disable authentication
+
+Auth is controlled by a single switch in `.env`:
+
+```bash
+MLFLOW_AUTH_ENABLED=true    # login required (basic-auth) -- recommended
+MLFLOW_AUTH_ENABLED=false   # open server, no login at all
+```
+
+To change it on a running stack, edit `.env` and recreate the MLflow container:
+
+```bash
+# turn OFF (open access)
+sed -i 's/^MLFLOW_AUTH_ENABLED=.*/MLFLOW_AUTH_ENABLED=false/' .env
+docker compose up -d mlflow
+
+# turn ON (login required)
+sed -i 's/^MLFLOW_AUTH_ENABLED=.*/MLFLOW_AUTH_ENABLED=true/' .env
+docker compose up -d mlflow
+```
+
+Check which mode is active in the startup log:
+
+```bash
+docker compose logs mlflow | grep basic-auth
+# ">> basic-auth ENABLED (login required)"  or  ">> basic-auth DISABLED (open server...)"
+```
+
+Notes:
+- **Disabled = fully open.** Anyone who can reach the server has read/write/delete
+  access to all experiments, models, and artifacts. Only do this on a trusted
+  network, and ideally restrict port 80 at the firewall.
+- User accounts persist in the `mlflow_auth` volume while auth is off, so
+  re-enabling restores them — no need to recreate users.
+
 ## Managing users
+
+> Applies when `MLFLOW_AUTH_ENABLED=true`.
 
 The bootstrap admin (from `.env`) can create per-developer accounts. See the
 MLflow auth REST API, e.g. create a user:
