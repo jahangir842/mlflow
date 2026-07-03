@@ -16,9 +16,9 @@ it.
 The server is reached by the name `mlflow.local`. Add one line to your machine's
 **hosts file** so the name points to the server (`192.168.3.86`):
 
-**Linux / macOS:**
+**Linux / macOS** (safe to re-run — only adds the line if it's not already there):
 ```bash
-echo "192.168.3.86  mlflow.local" | sudo tee -a /etc/hosts
+grep -q "mlflow.local" /etc/hosts || echo "192.168.3.86  mlflow.local" | sudo tee -a /etc/hosts
 ```
 
 **Windows** (open PowerShell/Notepad **as Administrator**):
