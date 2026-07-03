@@ -1,224 +1,108 @@
-# MLflow Developers Guide
+# MLflow — Developer Quickstart
 
-How to log experiments, models, and artifacts to the company's central MLflow
-tracking server. This is for **users** of MLflow (data scientists / ML
-engineers). For deploying or operating the server, see the
-[Docker Compose guide](docker_compose_installation/README.md).
+Log your experiments, metrics, and models to the shared MLflow server. You don't
+need to install or run anything server-side — just point the `mlflow` client at
+it.
 
----
-
-## 1. What you get
-
-A shared tracking server that records, for every training run:
-- **Parameters** (hyperparameters, config)
-- **Metrics** (accuracy, loss, … — including per-step curves)
-- **Artifacts** (models, plots, files) — stored centrally, downloadable by anyone
-- **Model registry** (versioned, promotable models)
-
-You interact with it only through the `mlflow` Python client (or REST). You do
-**not** need any database access, S3 keys, or NFS mounts — the server handles
-storage for you.
+**Server:** `http://mlflow.local`  (or `http://192.168.3.86` if the name doesn't resolve)
 
 ---
 
-## 2. Access
-
-| | |
-|---|---|
-| **Tracking URL** | `http://mlflow.local` |
-| **Web UI** | open that URL in a browser |
-| **Auth** | username + password (per developer) |
-
-Ask an admin to create your account. Admins create one with:
+## 1. Set up (once)
 
 ```bash
-curl -u admin:<admin-password> -X POST \
-  http://mlflow.local/api/2.0/mlflow/users/create \
-  -H "Content-Type: application/json" \
-  -d '{"username": "yourname", "password": "your-password"}'
-```
+pip install mlflow
 
-> If you can't reach the URL at all, you're likely off the network / VPN, the
-> hostname isn't resolving (see below), or the firewall port isn't open — ping an admin.
-
-### Making `mlflow.local` resolve
-
-The server listens on standard port 80, so no `:5000` is needed — but your
-machine has to know that `mlflow.local` means `192.168.3.86`. Either:
-
-- **Company DNS (preferred)** — ask IT to add an `A` record
-  `mlflow.local → 192.168.3.86` (or whatever hostname your team standardizes on),
-  so it works for everyone automatically, **or**
-- **Per-machine hosts file** — add one line yourself:
-  - Linux/macOS: `echo "192.168.3.86  mlflow.local" | sudo tee -a /etc/hosts`
-  - Windows: add `192.168.3.86  mlflow.local` to `C:\Windows\System32\drivers\etc\hosts` (as Administrator)
-
-You can always fall back to the raw IP with no port: `http://192.168.3.86`.
-
----
-
-## 3. Set up your machine
-
-```bash
-pip install mlflow          # match the server's major version (2.x)
-```
-
-Point the client at the server and provide your credentials via **environment
-variables** — never hardcode credentials in code:
-
-```bash
+# Tell MLflow where the server is
 export MLFLOW_TRACKING_URI="http://mlflow.local"
-export MLFLOW_TRACKING_USERNAME="yourname"
-export MLFLOW_TRACKING_PASSWORD="your-password"
 ```
 
-Put these in your shell profile (`~/.bashrc` / `~/.zshrc`) or a local `.env`
-that you **do not commit**. Verify it works:
+Put that `export` in your `~/.bashrc` / `~/.zshrc` so it's always set.
 
+> **If the server requires a login**, also set:
+> ```bash
+> export MLFLOW_TRACKING_USERNAME="your-username"
+> export MLFLOW_TRACKING_PASSWORD="your-password"
+> ```
+> (Ask an admin whether login is required and for your account.)
+
+Check it works:
 ```bash
 python -c "import mlflow; print(mlflow.search_experiments())"
 ```
 
-An empty list (`[]`) or a list of experiments both mean success. An error
-mentioning `401` means your username/password is wrong.
-
 ---
 
-## 4. Log your first run
+## 2. Log a run
 
 ```python
 import mlflow
 
-# Groups runs under a named experiment (created automatically if new).
-# Convention: "<project> - <your-name>" so experiments are easy to find.
-mlflow.set_experiment("fraud-model - alice")
+mlflow.set_experiment("my-project")          # groups your runs
 
-with mlflow.start_run(run_name="baseline-xgboost"):
-    # --- parameters ---
-    mlflow.log_param("max_depth", 6)
-    mlflow.log_param("learning_rate", 0.1)
-
-    # --- metrics ---
-    mlflow.log_metric("accuracy", 0.93)
-    mlflow.log_metric("auc", 0.97)
-
-    # --- metric over time (e.g. per epoch) ---
-    for epoch, loss in enumerate([0.9, 0.6, 0.4, 0.3]):
-        mlflow.log_metric("loss", loss, step=epoch)
-
-    # --- tags (searchable metadata) ---
-    mlflow.set_tag("dataset_version", "2024-06")
-
-    # --- artifacts (any file: plots, configs, data samples) ---
-    mlflow.log_artifact("confusion_matrix.png")
+with mlflow.start_run(run_name="first-try"):
+    mlflow.log_param("learning_rate", 0.01)  # settings
+    mlflow.log_metric("accuracy", 0.93)      # results
+    mlflow.log_artifact("plot.png")          # any file (saved centrally)
 ```
 
-Open the UI, pick your experiment, and you'll see the run with everything logged.
-Artifacts are uploaded to the server's object store and viewable/downloadable
-from the run page.
+Open **`http://mlflow.local`** in your browser to see it.
 
 ---
 
-## 5. Autologging (easiest way to start)
+## 3. Easiest: autolog
 
-For supported libraries, one line captures params, metrics, and the model
-automatically:
+One line captures params, metrics, and the model automatically for common
+libraries (scikit-learn, XGBoost, PyTorch, Keras, …):
 
 ```python
 import mlflow
+mlflow.autolog()
 
-mlflow.autolog()          # or mlflow.sklearn.autolog(), mlflow.pytorch.autolog(), etc.
-
-# ...your normal training code inside a run...
 with mlflow.start_run():
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train)              # everything logged for you
 ```
-
-Supported: scikit-learn, XGBoost, LightGBM, PyTorch Lightning, Keras/TensorFlow,
-and more. See the [MLflow autolog docs](https://mlflow.org/docs/latest/tracking/autolog.html).
 
 ---
 
-## 6. Log and load models
-
-Log a model as a first-class artifact:
+## 4. Save and load a model
 
 ```python
 import mlflow.sklearn
 
 with mlflow.start_run():
     model.fit(X_train, y_train)
-    mlflow.sklearn.log_model(model, artifact_path="model")
+    mlflow.sklearn.log_model(model, "model")
 ```
 
-Load it back anywhere (any teammate, with their own credentials set):
+Load it back later (anywhere, once your `MLFLOW_TRACKING_URI` is set):
 
 ```python
 import mlflow
-
-run_id = "xxxxxxxxxxxxxxxx"
-model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
+model = mlflow.sklearn.load_model("runs:/<run_id>/model")
 model.predict(X_new)
 ```
 
-### Model Registry (promote models across stages)
-
-```python
-# Register a run's model under a shared name
-mlflow.register_model(f"runs:/{run_id}/model", "fraud-model")
-
-# Later, load a specific version or alias
-model = mlflow.sklearn.load_model("models:/fraud-model/3")          # version 3
-model = mlflow.sklearn.load_model("models:/fraud-model@champion")   # by alias
-```
-
-Use the **Models** tab in the UI to view versions, add aliases (e.g.
-`champion`, `staging`), and see lineage back to the source run.
+(You can find the `run_id` on the run's page in the UI.)
 
 ---
 
-## 7. Conventions & best practices
+## 5. Tips
 
-- **Experiment naming**: `"<project> - <your-name>"` so work is easy to filter.
-- **Name your runs** (`run_name=`) — anonymous runs are hard to tell apart.
-- **Tag** runs with things you'll want to search on (`git_commit`, `dataset_version`, `model_type`).
-- **Log the environment**: call `mlflow.log_artifact("requirements.txt")` or use
-  autolog, which captures dependencies with the model.
-- **Never commit credentials** — keep them in env vars / an un-committed `.env`.
-- **One run per training attempt** — don't reuse a run for unrelated work.
-- **Large artifacts** are fine (they go to object storage), but avoid logging
-  huge raw datasets on every run; log a reference or a sample instead.
+- **Name your experiments and runs** so they're easy to find.
+- **Tag** runs with useful metadata: `mlflow.set_tag("dataset", "v2")`.
+- **Artifacts can be large** (models, images, files) — they're stored on the
+  server, not in git.
+- **Don't hardcode credentials** in code; use the environment variables above.
 
 ---
 
-## 8. Change your password
+## Troubleshooting
 
-```python
-import os, requests
-base = os.environ["MLFLOW_TRACKING_URI"]
-requests.patch(
-    f"{base}/api/2.0/mlflow/users/update-password",
-    auth=(os.environ["MLFLOW_TRACKING_USERNAME"], os.environ["MLFLOW_TRACKING_PASSWORD"]),
-    json={"username": os.environ["MLFLOW_TRACKING_USERNAME"], "password": "new-password"},
-)
-```
+| Problem | Fix |
+|---------|-----|
+| `Connection refused` / timeout | Check you're on the network/VPN. Try the IP: `http://192.168.3.86`. |
+| Name `mlflow.local` won't resolve | Use the IP, or add `192.168.3.86  mlflow.local` to your hosts file (ask an admin). |
+| `401` error | The server needs a login — set `MLFLOW_TRACKING_USERNAME` / `MLFLOW_TRACKING_PASSWORD`. |
 
----
-
-## 9. Troubleshooting
-
-| Symptom | Cause / fix |
-|---------|-------------|
-| `MlflowException: ... 401` | Wrong/missing username or password. Check `MLFLOW_TRACKING_USERNAME` / `MLFLOW_TRACKING_PASSWORD`. |
-| `Connection refused` / timeout | Not on the network/VPN, wrong URL, or firewall port closed. |
-| `PERMISSION_DENIED` on an experiment | New users default to READ. Ask an admin to grant you write access to that experiment. |
-| Artifacts won't upload | Usually a transient server issue — retry; if it persists, ping an admin (server-side object store). |
-| Version warnings | Keep your client on the same major version (2.x) as the server. |
-
----
-
-## Reference
-
-- [MLflow Tracking docs](https://mlflow.org/docs/latest/tracking.html)
-- [MLflow Model Registry docs](https://mlflow.org/docs/latest/model-registry.html)
-- [MLflow authentication docs](https://mlflow.org/docs/latest/auth/index.html)
+More: [MLflow Tracking docs](https://mlflow.org/docs/latest/tracking.html)
