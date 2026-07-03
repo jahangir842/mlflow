@@ -20,6 +20,5 @@ mlartifacts/
 *.dump
 *.sql
 
-# --- Example datasets & caches (large binaries, keep out of the repo) ---
-examples/yolo8/yolo8/
+# --- Large binaries / caches ---
 *.cache
