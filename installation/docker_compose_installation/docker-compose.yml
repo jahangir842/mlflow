@@ -98,6 +98,13 @@ services:
       # in .env to add your hostname/domain, or set it to "*" to disable the check
       # (trusted networks only).
       MLFLOW_SERVER_ALLOWED_HOSTS: ${MLFLOW_ALLOWED_HOSTS:-localhost,localhost:5000,127.0.0.1,mlflow,mlflow:5000,mlflow.local,192.168.*,10.*}
+      # MLflow 3.x CORS protection: browser Origins allowed to make state-changing
+      # (POST) calls. Behind a reverse proxy the UI looks "cross-origin" to the
+      # server, so the UI's own requests get blocked ("Failed to load chart data")
+      # unless the Origin is listed here. "*" allows all (trusted LAN); or set
+      # MLFLOW_CORS_ORIGINS in .env to your exact origins, e.g.
+      # "http://mlflow.local,http://192.168.3.86".
+      MLFLOW_SERVER_CORS_ALLOWED_ORIGINS: ${MLFLOW_CORS_ORIGINS:-*}
       # Toggle basic-auth on/off. "true" (default) = login required;
       # "false" = open server, no authentication.
       MLFLOW_AUTH_ENABLED: ${MLFLOW_AUTH_ENABLED:-true}

@@ -6,7 +6,7 @@ logs parameters, metrics, a plot artifact, and the model to the MLflow server.
 Usage:
     pip install -r requirements.txt
 
-    export MLFLOW_TRACKING_URI=http://mlflow.local     # or http://<server-ip>
+    export MLFLOW_TRACKING_URI=http://192.168.3.86     # or http://192.168.3.86
     # If the server requires a login, also:
     #   export MLFLOW_TRACKING_USERNAME=your-username
     #   export MLFLOW_TRACKING_PASSWORD=your-password
@@ -34,7 +34,7 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 
-TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://mlflow.local")
+TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://192.168.3.86")
 mlflow.set_tracking_uri(TRACKING_URI)
 print(f"Logging to: {TRACKING_URI}")
 
