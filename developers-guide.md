@@ -6,6 +6,9 @@ it.
 
 **Server:** `http://mlflow.local`  (or `http://192.168.3.86` if the name doesn't resolve)
 
+> Want a ready-to-run example first? See [`examples/`](examples/README.md) — a
+> one-command script that logs a full run (params, metrics, plot, model).
+
 ---
 
 ## 1. Set up (once)
