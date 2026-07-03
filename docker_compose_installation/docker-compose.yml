@@ -92,7 +92,10 @@ services:
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
       MLFLOW_BUCKET_NAME: ${MLFLOW_BUCKET_NAME}
-      # Bootstrap admin for basic-auth (only used on first startup)
+      # Toggle basic-auth on/off. "true" (default) = login required;
+      # "false" = open server, no authentication.
+      MLFLOW_AUTH_ENABLED: ${MLFLOW_AUTH_ENABLED:-true}
+      # Bootstrap admin for basic-auth (only used on first startup, when enabled)
       MLFLOW_ADMIN_USERNAME: ${MLFLOW_ADMIN_USERNAME}
       MLFLOW_ADMIN_PASSWORD: ${MLFLOW_ADMIN_PASSWORD}
       # Stable secret key for basic-auth CSRF protection. Must stay constant
@@ -108,8 +111,11 @@ services:
       - -c
       - |
         set -e
-        mkdir -p /mlflow/auth
-        cat > /mlflow/auth/basic_auth.ini <<EOF
+        AUTH_ARGS=""
+        if [ "$${MLFLOW_AUTH_ENABLED:-true}" = "true" ]; then
+          echo ">> basic-auth ENABLED (login required)"
+          mkdir -p /mlflow/auth
+          cat > /mlflow/auth/basic_auth.ini <<EOF
         [mlflow]
         default_permission = READ
         database_uri = sqlite:////mlflow/auth/basic_auth.db
@@ -117,14 +123,18 @@ services:
         admin_password = $${MLFLOW_ADMIN_PASSWORD}
         authorization_function = mlflow.server.auth:authenticate_request_basic_auth
         EOF
-        export MLFLOW_AUTH_CONFIG_PATH=/mlflow/auth/basic_auth.ini
+          export MLFLOW_AUTH_CONFIG_PATH=/mlflow/auth/basic_auth.ini
+          AUTH_ARGS="--app-name basic-auth"
+        else
+          echo ">> basic-auth DISABLED (open server, no login required)"
+        fi
         exec mlflow server \
           --host 0.0.0.0 \
           --port 5000 \
           --backend-store-uri "postgresql://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@postgres:5432/$${POSTGRES_DB}" \
           --artifacts-destination "s3://$${MLFLOW_BUCKET_NAME}" \
           --serve-artifacts \
-          --app-name basic-auth
+          $$AUTH_ARGS
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
